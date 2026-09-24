@@ -1,15 +1,15 @@
-name = "moonbitstack/CHANGE-ME"
+name = "moonbitstack/moonwgpu"
 
 version = "0.1.0"
 
 readme = "README.md"
 
-repository = "https://github.com/moonbitstack/CHANGE-ME"
+repository = "https://github.com/moonbitstack/moonwgpu"
 
 license = "Apache-2.0"
 
-keywords = [ "moonbit" ]
+keywords = [ "webgpu", "gpu", "graphics", "compute", "moonbit" ]
 
-description = "One sentence saying what this is and what it is not."
+description = "moonwgpu — the WebGPU API for MoonBit: the specification's own surface, over the browser's WebGPU on one host and a native backend on the other."
 
 preferred_target = "wasm-gc"
