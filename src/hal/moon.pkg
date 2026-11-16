@@ -1,0 +1,7 @@
+// The contract every backend implements: creating, reading and writing
+// resources, and executing a recorded command buffer. What a backend must
+// accept is the WebGPU specification; this package says what the layer above
+// needs from it.
+import {
+  "moonbitstack/moonwgpu/types",
+}

@@ -1,0 +1,57 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonwgpu/hal/memory"
+
+import {
+  "moonbitstack/moonwgpu/hal",
+  "moonbitstack/moonwgpu/types",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Backend {
+  limits : @types.Limits
+  features : @types.Features
+  buffers : Map[UInt64, BufferRecord]
+  textures : Map[UInt64, TextureRecord]
+  views : Map[UInt64, @types.TextureViewId]
+  samplers : Map[UInt64, @types.SamplerDescriptor]
+  shader_modules : Map[UInt64, @types.ShaderModuleDescriptor]
+  bind_group_layouts : Map[UInt64, @types.BindGroupLayoutDescriptor]
+  bind_groups : Map[UInt64, @types.BindGroupDescriptor]
+  pipeline_layouts : Map[UInt64, @types.PipelineLayoutDescriptor]
+  render_pipelines : Map[UInt64, @types.RenderPipelineDescriptor]
+  compute_pipelines : Map[UInt64, @types.ComputePipelineDescriptor]
+  query_sets : Map[UInt64, @types.QuerySetDescriptor]
+  submitted : Array[Array[@types.Command]]
+  mut next_id : UInt64
+}
+pub fn Backend::buffer_bytes(Self, @types.BufferId) -> Array[Byte] raise @hal.HalError
+pub fn Backend::new() -> Self
+pub fn Backend::submitted(Self) -> Array[Array[@types.Command]]
+pub fn Backend::texture_bytes(Self, @types.TextureId, mip_level? : Int32) -> Array[Byte] raise @hal.HalError
+pub fn Backend::with_capabilities(Capabilities) -> Self
+pub impl @hal.Hal for Backend
+
+pub struct BufferRecord {
+  descriptor : @types.BufferDescriptor
+  data : Array[Byte]
+  mut destroyed : Bool
+}
+
+pub(all) struct Capabilities {
+  limits : @types.Limits
+  features : @types.Features
+}
+
+pub struct TextureRecord {
+  descriptor : @types.TextureDescriptor
+  levels : Array[Array[Byte]]
+  mut destroyed : Bool
+}
+
+// Type aliases
+
+// Traits

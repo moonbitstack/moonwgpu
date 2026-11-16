@@ -1,0 +1,49 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonwgpu/hal"
+
+import {
+  "moonbitstack/moonwgpu/types",
+}
+
+// Values
+
+// Errors
+pub suberror HalError {
+  Missing(what~ : String)
+  Unsupported(what~ : String)
+  Exhausted(want~ : Int32, limit~ : Int32)
+  Failed(what~ : String)
+}
+pub fn HalError::exhausted(Int32, Int32) -> Self
+pub fn HalError::failed(String) -> Self
+pub fn HalError::missing(String) -> Self
+pub fn HalError::unsupported(String) -> Self
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+pub(open) trait Hal {
+  fn name(Self) -> String
+  fn limits(Self) -> @types.Limits
+  fn features(Self) -> @types.Features
+  fn create_buffer(Self, @types.BufferDescriptor) -> @types.BufferId raise HalError
+  fn destroy_buffer(Self, @types.BufferId) -> Unit
+  fn write_buffer(Self, @types.BufferId, Int32, Bytes) -> Unit raise HalError
+  fn read_buffer(Self, @types.BufferId, Int32, Int32) -> Bytes raise HalError
+  fn create_texture(Self, @types.TextureDescriptor) -> @types.TextureId raise HalError
+  fn destroy_texture(Self, @types.TextureId) -> Unit
+  fn create_texture_view(Self, @types.TextureId, @types.TextureViewDescriptor) -> @types.TextureViewId raise HalError
+  fn create_sampler(Self, @types.SamplerDescriptor) -> @types.SamplerId raise HalError
+  fn create_shader_module(Self, @types.ShaderModuleDescriptor) -> @types.ShaderModuleId raise HalError
+  fn create_bind_group_layout(Self, @types.BindGroupLayoutDescriptor) -> @types.BindGroupLayoutId raise HalError
+  fn create_bind_group(Self, @types.BindGroupDescriptor) -> @types.BindGroupId raise HalError
+  fn create_pipeline_layout(Self, @types.PipelineLayoutDescriptor) -> @types.PipelineLayoutId raise HalError
+  fn create_render_pipeline(Self, @types.RenderPipelineDescriptor) -> @types.RenderPipelineId raise HalError
+  fn create_compute_pipeline(Self, @types.ComputePipelineDescriptor) -> @types.ComputePipelineId raise HalError
+  fn create_query_set(Self, @types.QuerySetDescriptor) -> @types.QuerySetId raise HalError
+  fn submit(Self, Array[@types.Command]) -> Unit raise HalError
+  fn read_texture(Self, @types.TextureId, @types.Origin3d, @types.Extent3d, Int32) -> Bytes raise HalError
+  fn write_texture(Self, @types.TextureId, @types.Origin3d, @types.Extent3d, Int32, Bytes) -> Unit raise HalError
+}

@@ -1,0 +1,7 @@
+// A backend that keeps every resource in memory and executes the copying and
+// clearing commands for real. It is the reference backend the test suite runs
+// against: no GPU, no window, byte-exact results.
+import {
+  "moonbitstack/moonwgpu/types",
+  "moonbitstack/moonwgpu/hal",
+}
