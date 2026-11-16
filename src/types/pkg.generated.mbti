@@ -1,0 +1,1341 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonwgpu/types"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) enum AddressMode {
+  ClampToEdge
+  Repeat
+  MirrorRepeat
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum BackendKind {
+  WebGpu
+  Vulkan
+  Metal
+  Dx12
+  Gles
+  Memory
+}
+
+#derive(@debug.Debug)
+pub(all) struct BindGroupDescriptor {
+  label : String
+  layout : BindGroupLayoutId
+  entries : Array[BindGroupEntry]
+}
+pub fn BindGroupDescriptor::new(layout~ : BindGroupLayoutId, entries~ : Array[BindGroupEntry], label? : String) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct BindGroupEntry {
+  binding : Int32
+  resource : BindingResource
+}
+pub fn BindGroupEntry::new(binding~ : Int32, resource~ : BindingResource) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct BindGroupId(UInt64)
+pub fn BindGroupId::from_raw(UInt64) -> Self
+pub fn BindGroupId::raw(Self) -> UInt64
+
+#derive(@debug.Debug)
+pub(all) struct BindGroupLayoutDescriptor {
+  label : String
+  entries : Array[BindGroupLayoutEntry]
+}
+pub fn BindGroupLayoutDescriptor::new(entries~ : Array[BindGroupLayoutEntry], label? : String) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct BindGroupLayoutEntry {
+  binding : Int32
+  visibility : ShaderStages
+  kind : BindingLayout
+  count : Int32?
+}
+pub fn BindGroupLayoutEntry::new(binding~ : Int32, visibility~ : ShaderStages, kind~ : BindingLayout, count? : Int32) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct BindGroupLayoutId(UInt64)
+pub fn BindGroupLayoutId::from_raw(UInt64) -> Self
+pub fn BindGroupLayoutId::raw(Self) -> UInt64
+
+#derive(@debug.Debug)
+pub(all) enum BindingLayout {
+  Buffer(BufferBindingLayout)
+  Sampler(SamplerBindingLayout)
+  Texture(TextureBindingLayout)
+  StorageTexture(StorageTextureBindingLayout)
+}
+
+#derive(@debug.Debug)
+pub(all) enum BindingResource {
+  Buffer(BufferBinding)
+  Sampler(SamplerId)
+  TextureView(TextureViewId)
+}
+
+#derive(@debug.Debug)
+pub(all) struct BlendComponent {
+  src_factor : BlendFactor
+  dst_factor : BlendFactor
+  operation : BlendOperation
+}
+pub fn BlendComponent::new(src_factor? : BlendFactor, dst_factor? : BlendFactor, operation? : BlendOperation) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum BlendFactor {
+  Zero
+  One
+  Src
+  OneMinusSrc
+  SrcAlpha
+  OneMinusSrcAlpha
+  Dst
+  OneMinusDst
+  DstAlpha
+  OneMinusDstAlpha
+  SrcAlphaSaturated
+  Constant
+  OneMinusConstant
+  Src1
+  OneMinusSrc1
+  Src1Alpha
+  OneMinusSrc1Alpha
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum BlendOperation {
+  Add
+  Subtract
+  ReverseSubtract
+  Min
+  Max
+}
+
+#derive(@debug.Debug)
+pub(all) struct BlendState {
+  color : BlendComponent
+  alpha : BlendComponent
+}
+pub fn BlendState::new(color~ : BlendComponent, alpha~ : BlendComponent) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct BufferBinding {
+  buffer : BufferId
+  offset : Int32
+  size : Int32?
+}
+pub fn BufferBinding::new(buffer~ : BufferId, offset? : Int32, size? : Int32) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct BufferBindingLayout {
+  kind : BufferBindingType
+  has_dynamic_offset : Bool
+  min_binding_size : Int32?
+}
+pub fn BufferBindingLayout::new(kind~ : BufferBindingType, has_dynamic_offset? : Bool, min_binding_size? : Int32) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum BufferBindingType {
+  Uniform
+  Storage
+  ReadOnlyStorage
+}
+
+#derive(@debug.Debug)
+pub(all) struct BufferDescriptor {
+  label : String
+  size : Int32
+  usage : BufferUsages
+  mapped_at_creation : Bool
+}
+pub fn BufferDescriptor::new(size~ : Int32, usage~ : BufferUsages, mapped_at_creation? : Bool, label? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct BufferId(UInt64)
+pub fn BufferId::from_raw(UInt64) -> Self
+pub fn BufferId::raw(Self) -> UInt64
+
+#derive(Eq, @debug.Debug)
+pub struct BufferUsages(UInt32)
+pub fn BufferUsages::all() -> Self
+pub fn BufferUsages::bits(Self) -> UInt32
+pub fn BufferUsages::contains(Self, Self) -> Bool
+pub fn BufferUsages::copy_dst() -> Self
+pub fn BufferUsages::copy_src() -> Self
+pub fn BufferUsages::index() -> Self
+pub fn BufferUsages::indirect() -> Self
+pub fn BufferUsages::intersects(Self, Self) -> Bool
+pub fn BufferUsages::is_empty(Self) -> Bool
+pub fn BufferUsages::map_read() -> Self
+pub fn BufferUsages::map_write() -> Self
+pub fn BufferUsages::none() -> Self
+pub fn BufferUsages::query_resolve() -> Self
+pub fn BufferUsages::storage() -> Self
+pub fn BufferUsages::uniform() -> Self
+pub fn BufferUsages::vertex() -> Self
+pub impl BitAnd for BufferUsages
+pub impl BitOr for BufferUsages
+pub impl Sub for BufferUsages
+
+#derive(@debug.Debug)
+pub(all) struct ClearBuffer {
+  buffer : BufferId
+  offset : Int32
+  size : Int32
+}
+
+#derive(@debug.Debug)
+pub(all) struct ClearTexture {
+  texture : TextureId
+  mip_level : Int32
+  origin : Origin3d
+  size : Extent3d
+  aspect : TextureAspect
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Color {
+  r : Double
+  g : Double
+  b : Double
+  a : Double
+}
+pub fn Color::black() -> Self
+pub fn Color::new(r? : Double, g? : Double, b? : Double, a? : Double) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct ColorAttachment {
+  view : TextureViewId
+  resolve_target : TextureViewId?
+  load_op : LoadOp
+  clear_value : Color
+  store : StoreOp
+}
+pub fn ColorAttachment::new(view~ : TextureViewId, resolve_target? : TextureViewId, load_op? : LoadOp, clear_value? : Color, store? : StoreOp) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct ColorTargetState {
+  format : TextureFormat
+  blend : BlendState?
+  write_mask : ColorWrites
+}
+pub fn ColorTargetState::new(format~ : TextureFormat, blend? : BlendState, write_mask? : ColorWrites) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct ColorWrites(UInt32)
+pub fn ColorWrites::all() -> Self
+pub fn ColorWrites::alpha() -> Self
+pub fn ColorWrites::bits(Self) -> UInt32
+pub fn ColorWrites::blue() -> Self
+pub fn ColorWrites::contains(Self, Self) -> Bool
+pub fn ColorWrites::green() -> Self
+pub fn ColorWrites::is_empty(Self) -> Bool
+pub fn ColorWrites::none() -> Self
+pub fn ColorWrites::red() -> Self
+pub impl BitAnd for ColorWrites
+pub impl BitOr for ColorWrites
+
+#derive(@debug.Debug)
+pub(all) enum Command {
+  CopyBufferToBuffer(CopyBufferToBuffer)
+  CopyBufferToTexture(CopyBufferToTexture)
+  CopyTextureToBuffer(CopyTextureToBuffer)
+  CopyTextureToTexture(CopyTextureToTexture)
+  ClearBuffer(ClearBuffer)
+  ClearTexture(ClearTexture)
+  ResolveQuerySet(ResolveQuerySet)
+  RenderPass(RenderPassCommand)
+  ComputePass(ComputePassCommand)
+}
+
+#derive(@debug.Debug)
+pub(all) struct CommandBuffer {
+  label : String
+  commands : Array[Command]
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum CompareFunction {
+  Never
+  Less
+  Equal
+  LessEqual
+  Greater
+  NotEqual
+  GreaterEqual
+  Always
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum CompilationMessageType {
+  Error
+  Warning
+  Info
+}
+
+#derive(@debug.Debug)
+pub(all) enum ComputeCommand {
+  SetPipeline(ComputePipelineId)
+  SetBindGroup(SetBindGroup)
+  DispatchWorkgroups(DispatchArguments)
+  DispatchWorkgroupsIndirect(DispatchIndirect)
+  WriteTimestamp(WriteTimestamp)
+  InsertDebugMarker(String)
+  PushDebugGroup(String)
+  PopDebugGroup
+}
+
+#derive(@debug.Debug)
+pub(all) struct ComputePassCommand {
+  label : String
+  timestamp_writes : PassTimestampWrites?
+  commands : Array[ComputeCommand]
+}
+
+#derive(@debug.Debug)
+pub(all) struct ComputePassDescriptor {
+  label : String
+  timestamp_writes : PassTimestampWrites?
+}
+pub fn ComputePassDescriptor::new(label? : String, timestamp_writes? : PassTimestampWrites) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct ComputePipelineDescriptor {
+  label : String
+  layout : PipelineLayoutId?
+  shader : ShaderModuleId
+  entry_point : String
+  constants : Array[(String, Double)]
+}
+pub fn ComputePipelineDescriptor::new(shader~ : ShaderModuleId, entry_point~ : String, layout? : PipelineLayoutId, constants? : Array[(String, Double)], label? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct ComputePipelineId(UInt64)
+pub fn ComputePipelineId::from_raw(UInt64) -> Self
+pub fn ComputePipelineId::raw(Self) -> UInt64
+
+#derive(@debug.Debug)
+pub(all) struct CopyBufferToBuffer {
+  source : BufferId
+  source_offset : Int32
+  destination : BufferId
+  destination_offset : Int32
+  size : Int32
+}
+
+#derive(@debug.Debug)
+pub(all) struct CopyBufferToTexture {
+  source : TexelCopyBufferInfo
+  destination : TexelCopyTextureInfo
+  copy_size : Extent3d
+}
+
+#derive(@debug.Debug)
+pub(all) struct CopyTextureToBuffer {
+  source : TexelCopyTextureInfo
+  destination : TexelCopyBufferInfo
+  copy_size : Extent3d
+}
+
+#derive(@debug.Debug)
+pub(all) struct CopyTextureToTexture {
+  source : TexelCopyTextureInfo
+  destination : TexelCopyTextureInfo
+  copy_size : Extent3d
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum CullMode {
+  None
+  Front
+  Back
+}
+
+#derive(@debug.Debug)
+pub(all) struct DepthBiasState {
+  constant : Int32
+  slope_scale : Double
+  clamp : Double
+}
+pub fn DepthBiasState::new(constant? : Int32, slope_scale? : Double, clamp? : Double) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct DepthStencilAttachment {
+  view : TextureViewId
+  depth_load_op : LoadOp
+  depth_clear_value : Double
+  depth_store : StoreOp
+  depth_read_only : Bool
+  stencil_load_op : LoadOp
+  stencil_clear_value : Int32
+  stencil_store : StoreOp
+  stencil_read_only : Bool
+}
+pub fn DepthStencilAttachment::new(view~ : TextureViewId, depth_load_op? : LoadOp, depth_clear_value? : Double, depth_store? : StoreOp, depth_read_only? : Bool, stencil_load_op? : LoadOp, stencil_clear_value? : Int32, stencil_store? : StoreOp, stencil_read_only? : Bool) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct DepthStencilState {
+  format : TextureFormat
+  depth_write_enabled : Bool
+  depth_compare : CompareFunction
+  stencil : StencilState
+  bias : DepthBiasState
+}
+pub fn DepthStencilState::new(format~ : TextureFormat, depth_write_enabled? : Bool, depth_compare? : CompareFunction, stencil? : StencilState, bias? : DepthBiasState) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum DeviceLostReason {
+  Unknown
+  Destroyed
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct DispatchArguments {
+  x : Int32
+  y : Int32
+  z : Int32
+}
+pub fn DispatchArguments::new(x~ : Int32, y? : Int32, z? : Int32) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct DispatchIndirect {
+  buffer : BufferId
+  offset : Int32
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct DrawArguments {
+  vertex_count : Int32
+  instance_count : Int32
+  first_vertex : Int32
+  first_instance : Int32
+}
+pub fn DrawArguments::new(vertex_count~ : Int32, instance_count? : Int32, first_vertex? : Int32, first_instance? : Int32) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct DrawIndexedArguments {
+  index_count : Int32
+  instance_count : Int32
+  first_index : Int32
+  base_vertex : Int32
+  first_instance : Int32
+}
+pub fn DrawIndexedArguments::new(index_count~ : Int32, instance_count? : Int32, first_index? : Int32, base_vertex? : Int32, first_instance? : Int32) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct DrawIndexedIndirect {
+  buffer : BufferId
+  offset : Int32
+}
+
+#derive(@debug.Debug)
+pub(all) struct DrawIndirect {
+  buffer : BufferId
+  offset : Int32
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum ErrorFilter {
+  Validation
+  OutOfMemory
+  Internal
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum ErrorKind {
+  InvalidBufferSize
+  InvalidBufferUsage
+  InvalidBufferState
+  InvalidTextureDescriptor
+  InvalidTextureDimension
+  InvalidTextureFormat
+  InvalidTextureUsage
+  InvalidTextureSampleCount
+  InvalidTextureViewDescriptor
+  InvalidSamplerDescriptor
+  InvalidBindGroupLayout
+  InvalidBindGroup
+  InvalidPipelineLayout
+  InvalidShaderModule
+  InvalidRenderPipeline
+  InvalidComputePipeline
+  InvalidVertexState
+  InvalidFragmentState
+  InvalidPrimitiveState
+  InvalidDepthStencilState
+  InvalidMultisampleState
+  InvalidCopyRange
+  InvalidCopySize
+  InvalidAlignment
+  InvalidBytesPerRow
+  InvalidSubresource
+  InvalidPassDescriptor
+  InvalidPassState
+  InvalidDraw
+  InvalidDispatch
+  PassNotEnded
+  EncoderFinished
+  InvalidResource
+  MissingFeature
+  LimitExceeded
+  DeviceLost
+  OutOfMemory
+  Internal
+}
+pub fn ErrorKind::name(Self) -> String
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Extent3d {
+  width : Int32
+  height : Int32
+  depth_or_array_layers : Int32
+}
+pub fn Extent3d::is_empty(Self) -> Bool
+pub fn Extent3d::max_mip_level_count(Self) -> Int32
+pub fn Extent3d::new(width~ : Int32, height? : Int32, depth_or_array_layers? : Int32) -> Self
+pub fn Extent3d::physical_size(Self, mip_level~ : Int32, format~ : TextureFormat) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum FeatureName {
+  CoreFeaturesAndLimits
+  DepthClipControl
+  Depth32floatStencil8
+  TextureCompressionBc
+  TextureCompressionBcSliced3d
+  TextureCompressionEtc2
+  TextureCompressionAstc
+  TextureCompressionAstcSliced3d
+  TimestampQuery
+  IndirectFirstInstance
+  ShaderF16
+  Rg11b10ufloatRenderable
+  Bgra8unormStorage
+  Float32Filterable
+  Float32Blendable
+  ClipDistances
+  DualSourceBlending
+  Subgroups
+  TextureFormatsTier1
+  TextureFormatsTier2
+  PrimitiveIndex
+  TextureComponentSwizzle
+  SubgroupSizeControl
+  TextureCompressionUnaligned
+  AtomicVec2uMinMax
+}
+pub fn FeatureName::all() -> Array[Self]
+pub fn FeatureName::dependencies(Self) -> Array[Self]
+pub fn FeatureName::name(Self) -> String
+
+#derive(Eq, @debug.Debug)
+pub struct Features(UInt32)
+pub fn Features::all() -> Self
+pub fn Features::bits(Self) -> UInt32
+pub fn Features::contains(Self, FeatureName) -> Bool
+pub fn Features::contains_all(Self, Self) -> Bool
+pub fn Features::is_empty(Self) -> Bool
+pub fn Features::names(Self) -> Array[FeatureName]
+pub fn Features::none() -> Self
+pub fn Features::of(FeatureName) -> Self
+pub impl BitAnd for Features
+pub impl BitOr for Features
+
+#derive(Eq, @debug.Debug)
+pub(all) enum FilterMode {
+  Nearest
+  Linear
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum FormatAspect {
+  Color
+  DepthOnly
+  StencilOnly
+  DepthStencil
+}
+
+#derive(@debug.Debug)
+pub(all) struct FormatInfo {
+  block_width : Int32
+  block_height : Int32
+  bytes_per_block : Int32
+  bytes_per_sample : Int32
+  sample_type : SampleType
+  aspect : FormatAspect
+  render_attachment : Bool
+  blendable : Bool
+  multisample : Bool
+  resolve : Bool
+  storage : StorageAccess
+  copy_src : Bool
+  copy_dst : Bool
+  feature : FeatureName?
+}
+
+#derive(@debug.Debug)
+pub(all) struct FragmentState {
+  shader : ShaderModuleId
+  entry_point : String
+  targets : Array[ColorTargetState]
+}
+pub fn FragmentState::new(shader~ : ShaderModuleId, entry_point~ : String, targets~ : Array[ColorTargetState]) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum FrontFace {
+  Ccw
+  Cw
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum IndexFormat {
+  Uint16
+  Uint32
+}
+pub fn IndexFormat::size(Self) -> Int32
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Limits {
+  max_texture_dimension_1d : Int32
+  max_texture_dimension_2d : Int32
+  max_texture_dimension_3d : Int32
+  max_texture_array_layers : Int32
+  max_bind_groups : Int32
+  max_bind_groups_plus_vertex_buffers : Int32
+  max_immediate_size : Int32
+  max_bindings_per_bind_group : Int32
+  max_dynamic_uniform_buffers_per_pipeline_layout : Int32
+  max_dynamic_storage_buffers_per_pipeline_layout : Int32
+  max_sampled_textures_per_shader_stage : Int32
+  max_samplers_per_shader_stage : Int32
+  max_storage_buffers_per_shader_stage : Int32
+  max_storage_buffers_in_vertex_stage : Int32
+  max_storage_buffers_in_fragment_stage : Int32
+  max_storage_textures_per_shader_stage : Int32
+  max_storage_textures_in_vertex_stage : Int32
+  max_storage_textures_in_fragment_stage : Int32
+  max_uniform_buffers_per_shader_stage : Int32
+  max_uniform_buffer_binding_size : Int32
+  max_storage_buffer_binding_size : Int32
+  min_uniform_buffer_offset_alignment : Int32
+  min_storage_buffer_offset_alignment : Int32
+  max_vertex_buffers : Int32
+  max_buffer_size : Int32
+  max_vertex_attributes : Int32
+  max_vertex_buffer_array_stride : Int32
+  max_inter_stage_shader_variables : Int32
+  max_color_attachments : Int32
+  max_color_attachment_bytes_per_sample : Int32
+  max_compute_workgroup_storage_size : Int32
+  max_compute_invocations_per_workgroup : Int32
+  max_compute_workgroup_size_x : Int32
+  max_compute_workgroup_size_y : Int32
+  max_compute_workgroup_size_z : Int32
+  max_compute_workgroups_per_dimension : Int32
+}
+pub fn Limits::compatibility() -> Self
+pub fn Limits::entries(Self) -> Array[(String, Int32)]
+pub fn Limits::exceeds(Self, Self) -> (String, Int32, Int32)?
+pub fn Limits::webgpu() -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum LoadOp {
+  Load
+  Clear
+}
+
+#derive(Eq, @debug.Debug)
+pub struct MapMode(UInt32)
+pub fn MapMode::bits(Self) -> UInt32
+pub fn MapMode::contains(Self, Self) -> Bool
+pub fn MapMode::is_empty(Self) -> Bool
+pub fn MapMode::none() -> Self
+pub fn MapMode::read() -> Self
+pub fn MapMode::write() -> Self
+pub impl BitAnd for MapMode
+pub impl BitOr for MapMode
+
+#derive(Eq, @debug.Debug)
+pub(all) enum MapState {
+  Unmapped
+  Pending
+  Mapped
+}
+
+#derive(@debug.Debug)
+pub(all) struct MultisampleState {
+  count : Int32
+  mask : UInt32
+  alpha_to_coverage_enabled : Bool
+}
+pub fn MultisampleState::new(count? : Int32, mask? : UInt32, alpha_to_coverage_enabled? : Bool) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Origin3d {
+  x : Int32
+  y : Int32
+  z : Int32
+}
+pub fn Origin3d::new(x? : Int32, y? : Int32, z? : Int32) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct PassTimestampWrites {
+  query_set : QuerySetId
+  beginning_of_pass_write_index : Int32?
+  end_of_pass_write_index : Int32?
+}
+pub fn PassTimestampWrites::new(query_set~ : QuerySetId, beginning_of_pass_write_index? : Int32, end_of_pass_write_index? : Int32) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum PipelineErrorReason {
+  Validation
+  Internal
+}
+
+#derive(@debug.Debug)
+pub(all) struct PipelineLayoutDescriptor {
+  label : String
+  bind_group_layouts : Array[BindGroupLayoutId]
+}
+pub fn PipelineLayoutDescriptor::new(bind_group_layouts~ : Array[BindGroupLayoutId], label? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct PipelineLayoutId(UInt64)
+pub fn PipelineLayoutId::from_raw(UInt64) -> Self
+pub fn PipelineLayoutId::raw(Self) -> UInt64
+
+#derive(Eq, @debug.Debug)
+pub(all) enum PowerPreference {
+  None
+  LowPower
+  HighPerformance
+}
+
+#derive(@debug.Debug)
+pub(all) struct PrimitiveState {
+  topology : PrimitiveTopology
+  strip_index_format : IndexFormat?
+  front_face : FrontFace
+  cull_mode : CullMode
+  unclipped_depth : Bool
+}
+pub fn PrimitiveState::new(topology? : PrimitiveTopology, strip_index_format? : IndexFormat, front_face? : FrontFace, cull_mode? : CullMode, unclipped_depth? : Bool) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum PrimitiveTopology {
+  PointList
+  LineList
+  LineStrip
+  TriangleList
+  TriangleStrip
+}
+
+#derive(@debug.Debug)
+pub(all) struct QuerySetDescriptor {
+  label : String
+  kind : QueryType
+  count : Int32
+}
+pub fn QuerySetDescriptor::new(kind~ : QueryType, count~ : Int32, label? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct QuerySetId(UInt64)
+pub fn QuerySetId::from_raw(UInt64) -> Self
+pub fn QuerySetId::raw(Self) -> UInt64
+
+#derive(Eq, @debug.Debug)
+pub(all) enum QueryType {
+  Occlusion
+  Timestamp
+}
+
+#derive(@debug.Debug)
+pub(all) struct RenderBundle {
+  label : String
+  commands : Array[RenderCommand]
+}
+
+#derive(@debug.Debug)
+pub(all) enum RenderCommand {
+  SetPipeline(RenderPipelineId)
+  SetBindGroup(SetBindGroup)
+  SetVertexBuffer(SetVertexBuffer)
+  SetIndexBuffer(SetIndexBuffer)
+  Draw(DrawArguments)
+  DrawIndexed(DrawIndexedArguments)
+  DrawIndirect(DrawIndirect)
+  DrawIndexedIndirect(DrawIndexedIndirect)
+  SetViewport(SetViewport)
+  SetScissorRect(SetScissorRect)
+  SetBlendConstant(Color)
+  SetStencilReference(Int32)
+  BeginOcclusionQuery(Int32)
+  EndOcclusionQuery
+  WriteTimestamp(WriteTimestamp)
+  ExecuteBundles(Array[RenderBundle])
+  InsertDebugMarker(String)
+  PushDebugGroup(String)
+  PopDebugGroup
+}
+
+#derive(@debug.Debug)
+pub(all) struct RenderPassCommand {
+  label : String
+  color_attachments : Array[ColorAttachment]
+  depth_stencil_attachment : DepthStencilAttachment?
+  timestamp_writes : PassTimestampWrites?
+  occlusion_query_set : QuerySetId?
+  commands : Array[RenderCommand]
+}
+
+#derive(@debug.Debug)
+pub(all) struct RenderPassDescriptor {
+  label : String
+  color_attachments : Array[ColorAttachment]
+  depth_stencil_attachment : DepthStencilAttachment?
+  timestamp_writes : PassTimestampWrites?
+  occlusion_query_set : QuerySetId?
+}
+pub fn RenderPassDescriptor::new(color_attachments? : Array[ColorAttachment], depth_stencil_attachment? : DepthStencilAttachment, timestamp_writes? : PassTimestampWrites, occlusion_query_set? : QuerySetId, label? : String) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct RenderPipelineDescriptor {
+  label : String
+  layout : PipelineLayoutId?
+  vertex : VertexState
+  primitive : PrimitiveState
+  depth_stencil : DepthStencilState?
+  multisample : MultisampleState
+  fragment : FragmentState?
+}
+pub fn RenderPipelineDescriptor::new(vertex~ : VertexState, layout? : PipelineLayoutId, primitive? : PrimitiveState, depth_stencil? : DepthStencilState, multisample? : MultisampleState, fragment? : FragmentState, label? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct RenderPipelineId(UInt64)
+pub fn RenderPipelineId::from_raw(UInt64) -> Self
+pub fn RenderPipelineId::raw(Self) -> UInt64
+
+#derive(@debug.Debug)
+pub(all) struct ResolveQuerySet {
+  query_set : QuerySetId
+  first_query : Int32
+  query_count : Int32
+  destination : BufferId
+  destination_offset : Int32
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SampleType {
+  Float
+  UnfilterableFloat
+  Uint
+  Sint
+  Depth
+}
+
+#derive(@debug.Debug)
+pub(all) struct SamplerBindingLayout {
+  kind : SamplerBindingType
+}
+pub fn SamplerBindingLayout::new(kind? : SamplerBindingType) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SamplerBindingType {
+  Filtering
+  NonFiltering
+  Comparison
+}
+
+#derive(@debug.Debug)
+pub(all) struct SamplerDescriptor {
+  label : String
+  address_mode_u : AddressMode
+  address_mode_v : AddressMode
+  address_mode_w : AddressMode
+  mag_filter : FilterMode
+  min_filter : FilterMode
+  mipmap_filter : FilterMode
+  lod_min_clamp : Double
+  lod_max_clamp : Double
+  compare : CompareFunction?
+  max_anisotropy : Int32
+}
+pub fn SamplerDescriptor::new(label? : String, address_mode_u? : AddressMode, address_mode_v? : AddressMode, address_mode_w? : AddressMode, mag_filter? : FilterMode, min_filter? : FilterMode, mipmap_filter? : FilterMode, lod_min_clamp? : Double, lod_max_clamp? : Double, compare? : CompareFunction, max_anisotropy? : Int32) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct SamplerId(UInt64)
+pub fn SamplerId::from_raw(UInt64) -> Self
+pub fn SamplerId::raw(Self) -> UInt64
+
+#derive(@debug.Debug)
+pub(all) struct SetBindGroup {
+  index : Int32
+  group : BindGroupId
+  dynamic_offsets : Array[Int32]
+}
+
+#derive(@debug.Debug)
+pub(all) struct SetIndexBuffer {
+  buffer : BufferId
+  format : IndexFormat
+  offset : Int32
+  size : Int32?
+}
+
+#derive(@debug.Debug)
+pub(all) struct SetScissorRect {
+  x : Int32
+  y : Int32
+  width : Int32
+  height : Int32
+}
+
+#derive(@debug.Debug)
+pub(all) struct SetVertexBuffer {
+  slot : Int32
+  buffer : BufferId
+  offset : Int32
+  size : Int32?
+}
+
+#derive(@debug.Debug)
+pub(all) struct SetViewport {
+  x : Double
+  y : Double
+  width : Double
+  height : Double
+  min_depth : Double
+  max_depth : Double
+}
+
+#derive(@debug.Debug)
+pub(all) struct ShaderModuleDescriptor {
+  label : String
+  source : String
+  kind : ShaderSourceKind
+}
+pub fn ShaderModuleDescriptor::wgsl(source~ : String, label? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct ShaderModuleId(UInt64)
+pub fn ShaderModuleId::from_raw(UInt64) -> Self
+pub fn ShaderModuleId::raw(Self) -> UInt64
+
+#derive(Eq, @debug.Debug)
+pub(all) enum ShaderSourceKind {
+  Wgsl
+  SpirV
+}
+
+#derive(Eq, @debug.Debug)
+pub struct ShaderStages(UInt32)
+pub fn ShaderStages::all() -> Self
+pub fn ShaderStages::bits(Self) -> UInt32
+pub fn ShaderStages::compute() -> Self
+pub fn ShaderStages::contains(Self, Self) -> Bool
+pub fn ShaderStages::fragment() -> Self
+pub fn ShaderStages::intersects(Self, Self) -> Bool
+pub fn ShaderStages::is_empty(Self) -> Bool
+pub fn ShaderStages::none() -> Self
+pub fn ShaderStages::vertex() -> Self
+pub impl BitAnd for ShaderStages
+pub impl BitOr for ShaderStages
+
+#derive(@debug.Debug)
+pub(all) struct StencilFaceState {
+  compare : CompareFunction
+  fail_op : StencilOperation
+  depth_fail_op : StencilOperation
+  pass_op : StencilOperation
+}
+pub fn StencilFaceState::new(compare? : CompareFunction, fail_op? : StencilOperation, depth_fail_op? : StencilOperation, pass_op? : StencilOperation) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum StencilOperation {
+  Keep
+  Zero
+  Replace
+  Invert
+  IncrementClamp
+  DecrementClamp
+  IncrementWrap
+  DecrementWrap
+}
+
+#derive(@debug.Debug)
+pub(all) struct StencilState {
+  front : StencilFaceState
+  back : StencilFaceState
+  read_mask : Int32
+  write_mask : Int32
+}
+pub fn StencilState::new(front? : StencilFaceState, back? : StencilFaceState, read_mask? : Int32, write_mask? : Int32) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum StorageAccess {
+  None
+  WriteOnly
+  ReadOnly
+  Both
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum StorageTextureAccess {
+  WriteOnly
+  ReadOnly
+  ReadWrite
+}
+
+#derive(@debug.Debug)
+pub(all) struct StorageTextureBindingLayout {
+  access : StorageTextureAccess
+  format : TextureFormat
+  view_dimension : TextureViewDimension
+}
+pub fn StorageTextureBindingLayout::new(format~ : TextureFormat, access? : StorageTextureAccess, view_dimension? : TextureViewDimension) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum StoreOp {
+  Store
+  Discard
+}
+
+#derive(@debug.Debug)
+pub(all) struct TexelCopyBufferInfo {
+  buffer : BufferId
+  layout : TexelCopyBufferLayout
+}
+pub fn TexelCopyBufferInfo::new(buffer~ : BufferId, layout~ : TexelCopyBufferLayout) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct TexelCopyBufferLayout {
+  offset : Int32
+  bytes_per_row : Int32?
+  rows_per_image : Int32?
+}
+pub fn TexelCopyBufferLayout::new(offset? : Int32, bytes_per_row? : Int32, rows_per_image? : Int32) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct TexelCopyTextureInfo {
+  texture : TextureId
+  mip_level : Int32
+  origin : Origin3d
+  aspect : TextureAspect
+}
+pub fn TexelCopyTextureInfo::new(texture~ : TextureId, mip_level? : Int32, origin? : Origin3d, aspect? : TextureAspect) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum TextureAspect {
+  All
+  StencilOnly
+  DepthOnly
+}
+
+#derive(@debug.Debug)
+pub(all) struct TextureBindingLayout {
+  sample_type : SampleType
+  view_dimension : TextureViewDimension
+  multisampled : Bool
+}
+pub fn TextureBindingLayout::new(sample_type? : SampleType, view_dimension? : TextureViewDimension, multisampled? : Bool) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct TextureDescriptor {
+  label : String
+  size : Extent3d
+  mip_level_count : Int32
+  sample_count : Int32
+  dimension : TextureDimension
+  format : TextureFormat
+  usage : TextureUsages
+  view_formats : Array[TextureFormat]
+  texture_binding_view_dimension : TextureViewDimension?
+}
+pub fn TextureDescriptor::new(size~ : Extent3d, format~ : TextureFormat, usage~ : TextureUsages, mip_level_count? : Int32, sample_count? : Int32, dimension? : TextureDimension, view_formats? : Array[TextureFormat], texture_binding_view_dimension? : TextureViewDimension, label? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum TextureDimension {
+  D1
+  D2
+  D3
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum TextureFormat {
+  R8unorm
+  R8snorm
+  R8uint
+  R8sint
+  R16unorm
+  R16snorm
+  R16uint
+  R16sint
+  R16float
+  Rg8unorm
+  Rg8snorm
+  Rg8uint
+  Rg8sint
+  R32uint
+  R32sint
+  R32float
+  Rg16unorm
+  Rg16snorm
+  Rg16uint
+  Rg16sint
+  Rg16float
+  Rgba8unorm
+  Rgba8unormSrgb
+  Rgba8snorm
+  Rgba8uint
+  Rgba8sint
+  Bgra8unorm
+  Bgra8unormSrgb
+  Rgb9e5ufloat
+  Rgb10a2uint
+  Rgb10a2unorm
+  Rg11b10ufloat
+  Rg32uint
+  Rg32sint
+  Rg32float
+  Rgba16unorm
+  Rgba16snorm
+  Rgba16uint
+  Rgba16sint
+  Rgba16float
+  Rgba32uint
+  Rgba32sint
+  Rgba32float
+  Stencil8
+  Depth16unorm
+  Depth24plus
+  Depth24plusStencil8
+  Depth32float
+  Depth32floatStencil8
+  Bc1RgbaUnorm
+  Bc1RgbaUnormSrgb
+  Bc2RgbaUnorm
+  Bc2RgbaUnormSrgb
+  Bc3RgbaUnorm
+  Bc3RgbaUnormSrgb
+  Bc4RUnorm
+  Bc4RSnorm
+  Bc5RgUnorm
+  Bc5RgSnorm
+  Bc6hRgbUfloat
+  Bc6hRgbFloat
+  Bc7RgbaUnorm
+  Bc7RgbaUnormSrgb
+  Etc2Rgb8unorm
+  Etc2Rgb8unormSrgb
+  Etc2Rgb8a1unorm
+  Etc2Rgb8a1unormSrgb
+  Etc2Rgba8unorm
+  Etc2Rgba8unormSrgb
+  EacR11unorm
+  EacR11snorm
+  EacRg11unorm
+  EacRg11snorm
+  Astc4x4Unorm
+  Astc4x4UnormSrgb
+  Astc5x4Unorm
+  Astc5x4UnormSrgb
+  Astc5x5Unorm
+  Astc5x5UnormSrgb
+  Astc6x5Unorm
+  Astc6x5UnormSrgb
+  Astc6x6Unorm
+  Astc6x6UnormSrgb
+  Astc8x5Unorm
+  Astc8x5UnormSrgb
+  Astc8x6Unorm
+  Astc8x6UnormSrgb
+  Astc8x8Unorm
+  Astc8x8UnormSrgb
+  Astc10x5Unorm
+  Astc10x5UnormSrgb
+  Astc10x6Unorm
+  Astc10x6UnormSrgb
+  Astc10x8Unorm
+  Astc10x8UnormSrgb
+  Astc10x10Unorm
+  Astc10x10UnormSrgb
+  Astc12x10Unorm
+  Astc12x10UnormSrgb
+  Astc12x12Unorm
+  Astc12x12UnormSrgb
+}
+pub fn TextureFormat::all() -> Array[Self]
+pub fn TextureFormat::bytes_per_row(Self, width~ : Int32) -> Int32
+pub fn TextureFormat::info(Self) -> FormatInfo
+pub fn TextureFormat::name(Self) -> String
+pub impl Show for TextureFormat
+
+#derive(Eq, @debug.Debug)
+pub struct TextureId(UInt64)
+pub fn TextureId::from_raw(UInt64) -> Self
+pub fn TextureId::raw(Self) -> UInt64
+
+#derive(Eq, @debug.Debug)
+pub struct TextureUsages(UInt32)
+pub fn TextureUsages::all() -> Self
+pub fn TextureUsages::bits(Self) -> UInt32
+pub fn TextureUsages::contains(Self, Self) -> Bool
+pub fn TextureUsages::copy_dst() -> Self
+pub fn TextureUsages::copy_src() -> Self
+pub fn TextureUsages::intersects(Self, Self) -> Bool
+pub fn TextureUsages::is_empty(Self) -> Bool
+pub fn TextureUsages::none() -> Self
+pub fn TextureUsages::render_attachment() -> Self
+pub fn TextureUsages::storage_binding() -> Self
+pub fn TextureUsages::texture_binding() -> Self
+pub impl BitAnd for TextureUsages
+pub impl BitOr for TextureUsages
+pub impl Sub for TextureUsages
+
+#derive(@debug.Debug)
+pub(all) struct TextureViewDescriptor {
+  label : String
+  format : TextureFormat?
+  dimension : TextureViewDimension?
+  aspect : TextureAspect
+  base_mip_level : Int32
+  mip_level_count : Int32?
+  base_array_layer : Int32
+  array_layer_count : Int32?
+  usage : TextureUsages?
+  swizzle : String?
+}
+pub fn TextureViewDescriptor::new(label? : String, format? : TextureFormat, dimension? : TextureViewDimension, aspect? : TextureAspect, base_mip_level? : Int32, mip_level_count? : Int32, base_array_layer? : Int32, array_layer_count? : Int32, usage? : TextureUsages, swizzle? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum TextureViewDimension {
+  D1
+  D2
+  D2Array
+  Cube
+  CubeArray
+  D3
+}
+
+#derive(Eq, @debug.Debug)
+pub struct TextureViewId(UInt64)
+pub fn TextureViewId::from_raw(UInt64) -> Self
+pub fn TextureViewId::raw(Self) -> UInt64
+
+#derive(@debug.Debug)
+pub(all) struct VertexAttribute {
+  format : VertexFormat
+  offset : Int32
+  shader_location : Int32
+}
+pub fn VertexAttribute::new(format~ : VertexFormat, offset~ : Int32, shader_location~ : Int32) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct VertexBufferLayout {
+  array_stride : Int32
+  step_mode : VertexStepMode
+  attributes : Array[VertexAttribute]
+}
+pub fn VertexBufferLayout::new(array_stride~ : Int32, step_mode~ : VertexStepMode, attributes~ : Array[VertexAttribute]) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum VertexDataType {
+  Uint
+  Sint
+  Unorm
+  Snorm
+  Float
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum VertexFormat {
+  Uint8
+  Uint8x2
+  Uint8x4
+  Sint8
+  Sint8x2
+  Sint8x4
+  Unorm8
+  Unorm8x2
+  Unorm8x4
+  Snorm8
+  Snorm8x2
+  Snorm8x4
+  Uint16
+  Uint16x2
+  Uint16x4
+  Sint16
+  Sint16x2
+  Sint16x4
+  Unorm16
+  Unorm16x2
+  Unorm16x4
+  Snorm16
+  Snorm16x2
+  Snorm16x4
+  Float16
+  Float16x2
+  Float16x4
+  Float32
+  Float32x2
+  Float32x3
+  Float32x4
+  Uint32
+  Uint32x2
+  Uint32x3
+  Uint32x4
+  Sint32
+  Sint32x2
+  Sint32x3
+  Sint32x4
+  Unorm1010102
+  Unorm8x4Bgra
+  Snorm1010102
+}
+pub fn VertexFormat::alignment(Self) -> Int32
+pub fn VertexFormat::all() -> Array[Self]
+pub fn VertexFormat::components(Self) -> Int32
+pub fn VertexFormat::info(Self) -> VertexFormatInfo
+pub fn VertexFormat::name(Self) -> String
+pub fn VertexFormat::size(Self) -> Int32
+pub impl Show for VertexFormat
+
+#derive(Eq, @debug.Debug)
+pub(all) struct VertexFormatInfo {
+  size : Int32
+  components : Int32
+  data_type : VertexDataType
+}
+
+#derive(@debug.Debug)
+pub(all) struct VertexState {
+  shader : ShaderModuleId
+  entry_point : String
+  buffers : Array[VertexBufferLayout]
+}
+pub fn VertexState::new(shader~ : ShaderModuleId, entry_point~ : String, buffers? : Array[VertexBufferLayout]) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum VertexStepMode {
+  Vertex
+  Instance
+}
+
+#derive(@debug.Debug)
+pub(all) struct WriteTimestamp {
+  query_set : QuerySetId
+  query_index : Int32
+}
+
+// Type aliases
+
+// Traits

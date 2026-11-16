@@ -1,0 +1,5 @@
+// The types package derives `Eq` and `Debug` for its public data types and
+// keeps the promoted methods out of the API reference.
+import {
+  "moonbitlang/core/debug",
+}
