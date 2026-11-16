@@ -1,0 +1,8 @@
+// An executable example: `moon run src/examples/<name>`.
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moonwgpu",
+  "moonbitstack/moonwgpu/types",
+  "moonbitstack/moonwgpu/hal/memory",
+}

@@ -1,2 +1,13 @@
-// What this package implements, and a first-hand link to the specification it
-// implements. A package without that link is not finished.
+// The public API: the objects of the WebGPU specification, one file per
+// object. Every method turns handles into identities, leaves the rules to
+// `core`, and hands the work to the backend. https://www.w3.org/TR/webgpu/
+import {
+  "moonbitstack/moonwgpu/types",
+  "moonbitstack/moonwgpu/core",
+  "moonbitstack/moonwgpu/hal",
+  "moonbitlang/core/debug",
+}
+
+import {
+  "moonbitstack/moonwgpu/hal/memory",
+} for "wbtest"
