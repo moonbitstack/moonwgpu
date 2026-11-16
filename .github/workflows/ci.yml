@@ -61,3 +61,28 @@ jobs:
       - name: interfaces are up to date
         run: |
           moon info --target all && git diff --exit-code
+
+  docs:
+    permissions:
+      contents: read
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install moonbit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: post install
+        run: |
+          moon version --all
+          moon update
+
+      # Every block marked `moonbit check` in the README and in the skill has to
+      # compile against this package. The script builds a throwaway package,
+      # checks it, and removes it again.
+      - name: the code in the docs compiles
+        run: python3 scripts/check_snippets.py
