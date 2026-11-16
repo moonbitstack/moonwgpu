@@ -1,0 +1,11 @@
+// Validation, resource state, command recording. Everything the specification
+// says a device checks before it hands work to the hardware lives here, so that
+// a backend only has to do what it is told. https://www.w3.org/TR/webgpu/#programming-model
+import {
+  "moonbitstack/moonwgpu/types",
+  "moonbitstack/moonwgpu/hal",
+}
+
+import {
+  "moonbitstack/moonwgpu/hal/memory",
+} for "wbtest"

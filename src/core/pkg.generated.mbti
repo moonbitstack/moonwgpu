@@ -1,0 +1,189 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonwgpu/core"
+
+import {
+  "moonbitstack/moonwgpu/hal",
+  "moonbitstack/moonwgpu/types",
+}
+
+// Values
+pub const COPY_BYTES_PER_ROW_ALIGNMENT : Int32 = 256
+
+pub fn array_layer_count_of_texture(@types.TextureDescriptor) -> Int32
+
+pub fn buffer_usage_names() -> Array[(String, UInt32)]
+
+pub fn invalid(@types.ErrorKind, String, String, String) -> Refused
+
+pub fn require(Bool, @types.ErrorKind, String, String, String) -> Unit raise Refused
+
+pub fn require_int(Bool, @types.ErrorKind, String, Int32, Int32) -> Unit raise Refused
+
+pub fn require_same(Int32, Int32, @types.ErrorKind, String) -> Unit raise Refused
+
+pub fn resolve_aspect_format(@types.TextureFormat, @types.TextureAspect) -> @types.TextureFormat
+
+pub fn texture_usage_names() -> Array[(String, UInt32)]
+
+pub fn validate_bind_group_descriptor(@types.BindGroupDescriptor, BindGroupLayoutState, Map[UInt64, BufferState], Map[UInt64, ViewState], Map[UInt64, TextureState], Map[UInt64, SamplerState], @types.Limits) -> Unit raise Refused
+
+pub fn validate_bind_group_layout_descriptor(@types.BindGroupLayoutDescriptor, @types.Limits) -> Unit raise Refused
+
+pub fn validate_buffer_descriptor(@types.BufferDescriptor, @types.Limits) -> Unit raise Refused
+
+pub fn validate_buffer_range(Int32, Int32, Int32, String) -> Unit raise Refused
+
+pub fn validate_buffer_to_texture_copy(BufferState, @types.TexelCopyBufferLayout, TextureState, @types.TexelCopyTextureInfo, @types.Extent3d, Int32, String) -> Unit raise Refused
+
+pub fn validate_compute_pipeline_descriptor(@types.ComputePipelineDescriptor, @types.Limits) -> Unit raise Refused
+
+pub fn validate_copy_buffer_to_buffer(BufferState, Int32, BufferState, Int32, Int32) -> Unit raise Refused
+
+pub fn validate_pipeline_layout_descriptor(@types.PipelineLayoutDescriptor, @types.Limits) -> Unit raise Refused
+
+pub fn validate_render_pipeline_descriptor(@types.RenderPipelineDescriptor, @types.Limits) -> Unit raise Refused
+
+pub fn validate_sampler_descriptor(@types.SamplerDescriptor) -> Unit raise Refused
+
+pub fn validate_texture_descriptor(@types.TextureDescriptor, @types.Limits, @types.Features) -> Unit raise Refused
+
+pub fn validate_texture_to_buffer_copy(TextureState, @types.TexelCopyTextureInfo, BufferState, @types.TexelCopyBufferLayout, @types.Extent3d) -> Unit raise Refused
+
+pub fn validate_texture_to_texture_copy(TextureState, @types.TexelCopyTextureInfo, TextureState, @types.TexelCopyTextureInfo, @types.Extent3d) -> Unit raise Refused
+
+pub fn validate_texture_view_descriptor(@types.TextureDescriptor, @types.TextureViewDescriptor, @types.Features) -> Unit raise Refused
+
+// Errors
+pub suberror Refused {
+  Validation(kind~ : @types.ErrorKind, at~ : String, want~ : String, got~ : String)
+  OutOfMemory(at~ : String, limit~ : Int32, want~ : Int32)
+  DeviceLost(reason~ : @types.DeviceLostReason)
+  Internal(message~ : String)
+}
+pub fn Refused::from_hal(@hal.HalError) -> Self
+pub fn Refused::message(Self) -> String
+
+// Types and methods
+pub struct BindGroupLayoutState {
+  descriptor : @types.BindGroupLayoutDescriptor
+}
+
+pub struct BindGroupState {
+  layout : @types.BindGroupLayoutId
+  descriptor : @types.BindGroupDescriptor
+}
+
+pub struct BufferState {
+  descriptor : @types.BufferDescriptor
+  mut destroyed : Bool
+  mapped : Bool
+}
+
+pub struct ErrorScope {
+  filter : @types.ErrorFilter
+  errors : Array[Refused]
+}
+
+pub struct Frame {
+  commands : Array[@types.Command]
+  mut open : Bool
+  mut finished : Bool
+}
+pub fn Frame::check(Self, String) -> Unit raise Refused
+pub fn Frame::close_pass(Self, @types.Command) -> Unit raise Refused
+pub fn Frame::finish(Self) -> Array[@types.Command] raise Refused
+pub fn Frame::new() -> Self
+pub fn Frame::open_pass(Self) -> Unit raise Refused
+pub fn Frame::record(Self, @types.Command) -> Unit raise Refused
+
+pub struct Hub {
+  backend : &@hal.Hal
+  limits : @types.Limits
+  features : @types.Features
+  buffers : Map[UInt64, BufferState]
+  textures : Map[UInt64, TextureState]
+  views : Map[UInt64, ViewState]
+  samplers : Map[UInt64, SamplerState]
+  shader_modules : Map[UInt64, ShaderModuleState]
+  bind_group_layouts : Map[UInt64, BindGroupLayoutState]
+  bind_groups : Map[UInt64, BindGroupState]
+  pipeline_layouts : Map[UInt64, PipelineLayoutState]
+  render_pipelines : Map[UInt64, @types.RenderPipelineDescriptor]
+  compute_pipelines : Map[UInt64, @types.ComputePipelineDescriptor]
+  query_sets : Map[UInt64, @types.QuerySetDescriptor]
+  mut lost : Bool
+  scopes : Array[ErrorScope]
+}
+pub fn Hub::backend_name(Self) -> String
+pub fn Hub::bind_group_layout(Self, @types.BindGroupLayoutId) -> BindGroupLayoutState raise Refused
+pub fn Hub::buffer(Self, @types.BufferId) -> BufferState raise Refused
+pub fn Hub::compute_pipeline_layout(Self, @types.ComputePipelineId) -> @types.PipelineLayoutId? raise Refused
+pub fn Hub::create_bind_group(Self, @types.BindGroupDescriptor) -> @types.BindGroupId raise Refused
+pub fn Hub::create_bind_group_layout(Self, @types.BindGroupLayoutDescriptor) -> @types.BindGroupLayoutId raise Refused
+pub fn Hub::create_buffer(Self, @types.BufferDescriptor) -> @types.BufferId raise Refused
+pub fn Hub::create_compute_pipeline(Self, @types.ComputePipelineDescriptor) -> @types.ComputePipelineId raise Refused
+pub fn Hub::create_pipeline_layout(Self, @types.PipelineLayoutDescriptor) -> @types.PipelineLayoutId raise Refused
+pub fn Hub::create_query_set(Self, @types.QuerySetDescriptor) -> @types.QuerySetId raise Refused
+pub fn Hub::create_render_pipeline(Self, @types.RenderPipelineDescriptor) -> @types.RenderPipelineId raise Refused
+pub fn Hub::create_sampler(Self, @types.SamplerDescriptor) -> @types.SamplerId raise Refused
+pub fn Hub::create_shader_module(Self, @types.ShaderModuleDescriptor) -> @types.ShaderModuleId raise Refused
+pub fn Hub::create_texture(Self, @types.TextureDescriptor) -> @types.TextureId raise Refused
+pub fn Hub::create_texture_view(Self, @types.TextureId, @types.TextureViewDescriptor) -> @types.TextureViewId raise Refused
+pub fn Hub::destroy_buffer(Self, @types.BufferId) -> Unit
+pub fn Hub::destroy_query_set(Self, @types.QuerySetId) -> Unit
+pub fn Hub::destroy_texture(Self, @types.TextureId) -> Unit
+pub fn Hub::ensure_alive(Self) -> Unit raise Refused
+pub fn Hub::features(Self) -> @types.Features
+pub fn Hub::limits(Self) -> @types.Limits
+pub fn Hub::lose(Self) -> Unit
+pub fn Hub::new(&@hal.Hal, @types.Limits, @types.Features) -> Self
+pub fn Hub::pipeline_layout(Self, @types.PipelineLayoutId) -> PipelineLayoutState raise Refused
+pub fn Hub::pop_error_scope(Self) -> Array[Refused] raise Refused
+pub fn Hub::push_error_scope(Self, @types.ErrorFilter) -> Unit
+pub fn Hub::read_buffer(Self, @types.BufferId, Int32, Int32) -> Bytes raise Refused
+pub fn Hub::render_pipeline_layout(Self, @types.RenderPipelineId) -> @types.PipelineLayoutId? raise Refused
+pub fn Hub::submit(Self, Array[@types.Command]) -> Unit raise Refused
+pub fn Hub::texture(Self, @types.TextureId) -> TextureState raise Refused
+pub fn Hub::write_buffer(Self, @types.BufferId, Int32, Bytes) -> Unit raise Refused
+pub fn Hub::write_texture(Self, @types.TexelCopyTextureInfo, Bytes, @types.TexelCopyBufferLayout) -> Unit raise Refused
+
+pub struct PipelineLayoutState {
+  descriptor : @types.PipelineLayoutDescriptor
+}
+
+pub struct SamplerState {
+  descriptor : @types.SamplerDescriptor
+  filtering : Bool
+  comparison : Bool
+}
+
+pub struct ShaderModuleState {
+  descriptor : @types.ShaderModuleDescriptor
+}
+
+pub struct TextureState {
+  descriptor : @types.TextureDescriptor
+  mut destroyed : Bool
+}
+
+pub struct UsageScope {
+  buffers : Map[UInt64, UInt32]
+  textures : Map[UInt64, UInt32]
+}
+pub fn UsageScope::new() -> Self
+pub fn UsageScope::use_buffer(Self, @types.BufferId, @types.BufferUsages) -> Unit raise Refused
+pub fn UsageScope::use_texture(Self, @types.TextureId, @types.TextureUsages) -> Unit raise Refused
+
+pub struct ViewState {
+  texture : @types.TextureId
+  format : @types.TextureFormat
+  dimension : @types.TextureViewDimension
+  aspect : @types.TextureAspect
+  mip_level_count : Int32
+  array_layer_count : Int32
+  destroyed : Bool
+}
+
+// Type aliases
+
+// Traits
