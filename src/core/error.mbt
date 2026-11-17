@@ -107,3 +107,15 @@ fn describe_usages(bits : UInt32, names : Array[(String, UInt32)]) -> String {
     out.join(" | ")
   }
 }
+
+///|
+/// How a refusal reads to a caller of `createRenderPipelineAsync` and its
+/// compute twin: `GPUPipelineError` carries a reason, and the two classes that
+/// can resolve that promise are the ones this reports.
+pub fn Refused::pipeline_reason(self : Refused) -> @types.PipelineErrorReason? {
+  match self {
+    Validation(..) => Some(@types.PipelineErrorReason::Validation)
+    Internal(..) => Some(@types.PipelineErrorReason::Internal)
+    _ => None
+  }
+}

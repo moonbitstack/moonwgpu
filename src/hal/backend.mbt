@@ -114,3 +114,43 @@ pub(open) trait Hal {
     Bytes,
   ) -> Unit raise HalError
 }
+
+///|
+/// What a host has to provide for a canvas to exist.
+///
+/// Presentation is the one part of the WebGPU object graph that cannot be
+/// written without a window system, so it is a contract instead of an
+/// implementation: a windowing layer implements this trait over its own
+/// surface handle and hands it to `CanvasContext`. Nothing about a swap chain,
+/// a compositor or a display server appears above this line.
+///
+/// The frames belong to the surface, not to the device: `acquire` returns a
+/// texture identity that the same surface presents and recycles, which is why
+/// `present` is here and not on `Hal`.
+pub(open) trait Surface {
+  ///|
+  /// The host's own name for this surface, as in `"window 1"`.
+  fn name(Self) -> String
+  ///|
+  /// The size the surface currently has, in pixels. A caller asks before it
+  /// acquires, because a resize between the two is the host's business.
+  fn size(Self) -> @types.Extent3d
+  ///|
+  /// Apply a configuration. The texture format is the one the caller will
+  /// render in; `view_formats` are the ones it may view the frame through.
+  fn configure(Self, @types.SurfaceConfiguration) -> Unit raise HalError
+  ///|
+  /// Drop the configuration and every frame held for it.
+  fn unconfigure(Self) -> Unit
+  ///|
+  /// What this surface accepts. A format is a hint: a surface that cannot
+  /// present it reports the formats it can.
+  fn capabilities(Self) -> @types.SurfaceCapabilities
+  ///|
+  /// The next frame to render into. `suboptimal` says the frame is usable but
+  /// no longer matches the surface, which is the cue to reconfigure.
+  fn acquire(Self) -> @types.SurfaceFrame raise HalError
+  ///|
+  /// Hand an acquired frame back for display.
+  fn present(Self, @types.TextureId) -> Unit raise HalError
+}

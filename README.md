@@ -17,11 +17,12 @@ The library is layered so that each question has one home:
 
 | Package | What it holds |
 |:--|:--|
-| `moonbitstack/moonwgpu` | The objects: instance, adapter, device, queue, buffers, textures, samplers, shader modules, layouts, pipelines, encoders, passes, bundles, query sets |
-| `moonbitstack/moonwgpu/types` | The vocabulary: descriptors, enumerations, flag sets, the texture and vertex format tables, limits and features |
+| `moonbitstack/moonwgpu` | The objects: instance, adapter, device, queue, buffers, textures, samplers, shader modules, layouts, pipelines, encoders, passes, bundles, query sets, canvas contexts |
+| `moonbitstack/moonwgpu/types` | The vocabulary: descriptors, enumerations, flag sets, the texture and vertex format tables, limits and features, surface configurations |
 | `moonbitstack/moonwgpu/core` | The rules: descriptor validation, usage tracking, command recording, error scopes |
-| `moonbitstack/moonwgpu/hal` | The contract a host implements: create, write, read, submit |
+| `moonbitstack/moonwgpu/hal` | The contract a host implements: create, write, read, submit, and the `Surface` a window system fills |
 | `moonbitstack/moonwgpu/hal/memory` | A host that keeps everything in memory and executes every copy and clear for real |
+| `moonbitstack/moonwgpu/hal/vulkan`, `hal/metal`, `hal/dx12`, `hal/gles`, `web` | One package per graphics API: the name of the backend, the seam it will sit on, and a refusal until its C stub or host bridge exists |
 
 ## Install
 
@@ -120,6 +121,48 @@ test {
 }
 ```
 
+## A shader you compiled yourself
+
+The device takes WGSL, and it also takes SPIR-V that a front end already
+produced, which is what a native backend wants and what a caller with a build
+step already has. The second form is checked for the magic number and for whole
+words, and nothing else: parsing SPIR-V is not this library's question.
+
+```moonbit check
+test {
+  let backend = @memory.Backend::new()
+  let device = @moonwgpu.Instance::new(backend~).request_adapter().request_device()
+  let words = b"\x03\x02\x23\x07\x00\x00\x01\x00"
+  let shader = device.create_shader_module(
+    descriptor=@types.ShaderModuleDescriptor::spirv(words~),
+  )
+  assert_eq(shader.get_compilation_info().messages.length(), 0)
+}
+```
+
+## A canvas
+
+A canvas is the one object that cannot exist without a window system, so it is
+split in two: `CanvasContext` holds a `@hal.Surface`, which a host implements
+over its own window or view, and turns the frames that surface hands out into
+ordinary `Texture` objects. Configure it with a device and a format, take a
+frame with `get_current_texture`, render into it like any other texture, and
+give it back with `present`.
+
+```moonbit nocheck
+let canvas = @moonwgpu.CanvasContext::new(surface~=window)
+canvas.configure(
+  device~,
+  configuration=@types.SurfaceConfiguration::new(
+    format=instance.get_preferred_canvas_format(),
+  ),
+)
+let frame = canvas.get_current_texture()
+// ... record a pass into `frame` ...
+device.queue().submit(command_buffers=[encoder.finish()])
+canvas.present(texture=frame)
+```
+
 ## What the device refuses
 
 Validation is not a mode: every call that the specification validates raises a
@@ -167,6 +210,7 @@ test {
 | `RenderBundleEncoder`, `RenderBundle` | A recorded run of draws any pass can execute |
 | `QuerySet` | Timestamps and occlusion results |
 | `ExternalTexture` | A decoded frame a host handed over, bindable until it expires |
+| `CanvasContext` | A surface a host provides, configured with a device and a format |
 
 ## What runs today
 
@@ -182,15 +226,17 @@ keeps the seam (`hal`'s contract) rather than pretending.
 | Bind groups, pipeline layouts, render and compute pipelines | done |
 | Command recording: passes, bundles, indirect draws and dispatches | done |
 | Copies and clears, executed byte exactly on the memory backend | done |
-| Mapping a buffer for read-back | done |
+| Mapping a buffer, whole or by range (`mapAsync`), for reading and for writing | done |
 | Query sets, timestamps, occlusion queries | recorded and validated |
 | Shader compilation info (`getCompilationInfo`) | reported by a backend that compiles; empty without one |
+| Shader modules from WGSL or from SPIR-V a front end produced | accepted, with the magic number and word alignment checked |
 | Immediate constants (`setImmediates`) | recorded and validated in passes and bundles |
 | External frames (`importExternalTexture`, `copyExternalImageToTexture`) | copied texel by texel, with row flipping and alpha premultiplication |
 | Limits, features and their dependencies | the specification's full tables |
 | Texture and vertex format tables | every format the specification defines |
-| Executing a shader | needs a WGSL front end, which is its own library |
-| Surfaces and canvases | a host's question; the contract is `hal` |
+| Canvases (`CanvasContext`, `configure`, `getCurrentTexture`) | a frame is an ordinary texture over the host's `Surface` |
+| Executing a shader | needs a WGSL front end, which is its own library (`moonnaga`) |
+| Vulkan, Metal, D3D12, GLES and browser backends | packaged and named; each refuses with its reason until its stub exists, and `hal` is where that stub lands |
 
 ## Install and targets
 

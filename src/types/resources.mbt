@@ -354,12 +354,64 @@ pub fn SamplerDescriptor::new(
 }
 
 ///|
+/// What a module is made of: WGSL text, or the SPIR-V words a front end has
+/// already produced.
+///
+/// The specification defines only `code` in WGSL. SPIR-V exists here because a
+/// native backend takes it directly, and a caller that compiled its shaders
+/// ahead of time should not have to feed them through a compiler it does not
+/// have. `moonnaga` is the front end that produces the second form; this
+/// library never parses either.
+#derive(Debug)
+pub(all) enum ShaderSource {
+  Wgsl(String)
+  SpirV(Bytes)
+}
+
+///|
+/// Which of the two forms this is, as a `GPUCompilationMessage` reader or a
+/// backend would ask.
+pub fn ShaderSource::kind(self : ShaderSource) -> ShaderSourceKind {
+  match self {
+    Wgsl(_) => ShaderSourceKind::Wgsl
+    SpirV(_) => ShaderSourceKind::SpirV
+  }
+}
+
+///|
+/// The text, when this is WGSL.
+pub fn ShaderSource::text(self : ShaderSource) -> String? {
+  match self {
+    Wgsl(text) => Some(text)
+    SpirV(_) => None
+  }
+}
+
+///|
+/// The words, when this is SPIR-V.
+pub fn ShaderSource::words(self : ShaderSource) -> Bytes? {
+  match self {
+    Wgsl(_) => None
+    SpirV(words) => Some(words)
+  }
+}
+
+///|
+/// Whether this carries nothing at all. An empty module is refused before it
+/// reaches a backend, and the two forms are empty for different reasons.
+pub fn ShaderSource::is_empty(self : ShaderSource) -> Bool {
+  match self {
+    Wgsl(text) => text.is_empty()
+    SpirV(words) => words.length() == 0
+  }
+}
+
+///|
 /// A `GPUShaderModuleDescriptor`.
 #derive(Debug)
 pub(all) struct ShaderModuleDescriptor {
   label : String
-  source : String
-  kind : ShaderSourceKind
+  code : ShaderSource
 }
 
 ///|
@@ -368,7 +420,25 @@ pub fn ShaderModuleDescriptor::wgsl(
   source~ : String,
   label~ : String = "",
 ) -> ShaderModuleDescriptor {
-  { label, source, kind: ShaderSourceKind::Wgsl, }
+  { label, code: ShaderSource::Wgsl(source), }
+}
+
+///|
+/// A shader module whose WGSL has already been compiled to SPIR-V, little
+/// endian words as a driver takes them.
+pub fn ShaderModuleDescriptor::spirv(
+  words~ : Bytes,
+  label~ : String = "",
+) -> ShaderModuleDescriptor {
+  { label, code: ShaderSource::SpirV(words), }
+}
+
+///|
+/// Which form the module is in.
+pub fn ShaderModuleDescriptor::kind(
+  self : ShaderModuleDescriptor,
+) -> ShaderSourceKind {
+  self.code.kind()
 }
 
 ///|
@@ -498,4 +568,20 @@ pub fn ExternalTextureDescriptor::new(
   label~ : String = "",
 ) -> ExternalTextureDescriptor {
   { label, image, color_space, }
+}
+
+///|
+/// `GPUDeviceLostInfo`: why a device is gone, and what it said about it.
+#derive(Eq, Debug)
+pub(all) struct DeviceLostInfo {
+  reason : DeviceLostReason
+  message : String
+}
+
+///|
+pub fn DeviceLostInfo::new(
+  reason~ : DeviceLostReason = DeviceLostReason::Unknown,
+  message~ : String = "",
+) -> DeviceLostInfo {
+  { reason, message, }
 }

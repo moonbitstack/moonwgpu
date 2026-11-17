@@ -1,0 +1,11 @@
+// The Direct3D 12 backend.
+//
+// D3D12 takes DXIL, which means a shader compiler that produces it, and a stub
+// around `ID3D12Device`, the command queue, the descriptor heaps and the swap
+// chain. What it needs before it can work is that stub and the DXIL that
+// `moonnaga` produces.
+//
+// https://learn.microsoft.com/windows/win32/direct3d12/
+import {
+  "moonbitstack/moonwgpu/hal",
+}

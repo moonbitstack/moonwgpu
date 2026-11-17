@@ -152,6 +152,21 @@ test {
   `@core.Refused`: `Validation(kind, at, want, got)`, `OutOfMemory`,
   `DeviceLost` or `Internal`. `kind` is the class the specification names, and
   `at` is the place in the descriptor, as in `"descriptor.usage"`.
+- **`mapAsync` maps a range.** The offset is a multiple of 8 and the size a
+  non-zero multiple of 4; `map_read` and `map_write` are the whole-buffer
+  shorthands. A write mapping is filled by `map_write` and reaches the device
+  when `unmap` runs.
+- **A shader may arrive already compiled.** `ShaderModuleDescriptor::spirv`
+  takes words from a front end; the magic number and the word alignment are
+  checked, and nothing is parsed.
+- **A canvas is a surface plus a context.** `CanvasContext::new(surface~)` takes
+  a `@hal.Surface` a host implements over its window; `configure` binds a device
+  and a format, `get_current_texture` returns an ordinary `Texture`.
+- **A backend that is not bound refuses once.** `hal/vulkan`, `hal/metal`,
+  `hal/dx12`, `hal/gles` and `web` are packages with a name and a reason; their
+  `open()` hands back a backend whose every call raises `Internal` with that
+  reason, so code written for them compiles and fails where the driver would
+  have answered.
 - **Validation happens at the queue for commands.** A draw that names no
   pipeline is legal to record and refused at `submit`; keep the whole batch in
   mind.

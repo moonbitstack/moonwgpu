@@ -42,6 +42,7 @@ pub(all) enum ErrorKind {
   PassNotEnded
   EncoderFinished
   InvalidResource
+  InvalidCanvasConfiguration
   MissingFeature
   LimitExceeded
   DeviceLost
@@ -85,6 +86,7 @@ pub fn ErrorKind::name(self : ErrorKind) -> String {
     PassNotEnded => "pass not ended"
     EncoderFinished => "encoder already finished"
     InvalidResource => "invalid resource"
+    InvalidCanvasConfiguration => "invalid canvas configuration"
     MissingFeature => "missing feature"
     LimitExceeded => "limit exceeded"
     DeviceLost => "device lost"

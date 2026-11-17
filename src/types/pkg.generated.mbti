@@ -187,6 +187,18 @@ pub impl BitAnd for BufferUsages
 pub impl BitOr for BufferUsages
 pub impl Sub for BufferUsages
 
+#derive(Eq, @debug.Debug)
+pub(all) enum CanvasAlphaMode {
+  Opaque
+  Premultiplied
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CanvasToneMapping {
+  mode : ToneMappingMode
+}
+pub fn CanvasToneMapping::new(mode? : ToneMappingMode) -> Self
+
 #derive(@debug.Debug)
 pub(all) struct ClearBuffer {
   buffer : BufferId
@@ -433,6 +445,13 @@ pub(all) struct DepthStencilState {
 pub fn DepthStencilState::new(format~ : TextureFormat, depth_write_enabled? : Bool, depth_compare? : CompareFunction, stencil? : StencilState, bias? : DepthBiasState) -> Self
 
 #derive(Eq, @debug.Debug)
+pub(all) struct DeviceLostInfo {
+  reason : DeviceLostReason
+  message : String
+}
+pub fn DeviceLostInfo::new(reason? : DeviceLostReason, message? : String) -> Self
+
+#derive(Eq, @debug.Debug)
 pub(all) enum DeviceLostReason {
   Unknown
   Destroyed
@@ -525,6 +544,7 @@ pub(all) enum ErrorKind {
   PassNotEnded
   EncoderFinished
   InvalidResource
+  InvalidCanvasConfiguration
   MissingFeature
   LimitExceeded
   DeviceLost
@@ -997,15 +1017,26 @@ pub(all) struct SetViewport {
 #derive(@debug.Debug)
 pub(all) struct ShaderModuleDescriptor {
   label : String
-  source : String
-  kind : ShaderSourceKind
+  code : ShaderSource
 }
+pub fn ShaderModuleDescriptor::kind(Self) -> ShaderSourceKind
+pub fn ShaderModuleDescriptor::spirv(words~ : Bytes, label? : String) -> Self
 pub fn ShaderModuleDescriptor::wgsl(source~ : String, label? : String) -> Self
 
 #derive(Eq, @debug.Debug)
 pub struct ShaderModuleId(UInt64)
 pub fn ShaderModuleId::from_raw(UInt64) -> Self
 pub fn ShaderModuleId::raw(Self) -> UInt64
+
+#derive(@debug.Debug)
+pub(all) enum ShaderSource {
+  Wgsl(String)
+  SpirV(Bytes)
+}
+pub fn ShaderSource::is_empty(Self) -> Bool
+pub fn ShaderSource::kind(Self) -> ShaderSourceKind
+pub fn ShaderSource::text(Self) -> String?
+pub fn ShaderSource::words(Self) -> Bytes?
 
 #derive(Eq, @debug.Debug)
 pub(all) enum ShaderSourceKind {
@@ -1085,6 +1116,32 @@ pub(all) enum StoreOp {
   Store
   Discard
 }
+
+#derive(@debug.Debug)
+pub(all) struct SurfaceCapabilities {
+  formats : Array[TextureFormat]
+  alpha_modes : Array[CanvasAlphaMode]
+  usages : TextureUsages
+}
+pub fn SurfaceCapabilities::new(formats~ : Array[TextureFormat], alpha_modes? : Array[CanvasAlphaMode], usages? : TextureUsages) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct SurfaceConfiguration {
+  format : TextureFormat
+  usage : TextureUsages
+  view_formats : Array[TextureFormat]
+  color_space : PredefinedColorSpace
+  tone_mapping : CanvasToneMapping
+  alpha_mode : CanvasAlphaMode
+}
+pub fn SurfaceConfiguration::new(format~ : TextureFormat, usage? : TextureUsages, view_formats? : Array[TextureFormat], color_space? : PredefinedColorSpace, tone_mapping? : CanvasToneMapping, alpha_mode? : CanvasAlphaMode) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct SurfaceFrame {
+  texture : TextureId
+  suboptimal : Bool
+}
+pub fn SurfaceFrame::new(texture~ : TextureId, suboptimal? : Bool) -> Self
 
 #derive(@debug.Debug)
 pub(all) struct TexelCopyBufferInfo {
@@ -1307,6 +1364,12 @@ pub(all) enum TextureViewDimension {
 pub struct TextureViewId(UInt64)
 pub fn TextureViewId::from_raw(UInt64) -> Self
 pub fn TextureViewId::raw(Self) -> UInt64
+
+#derive(Eq, @debug.Debug)
+pub(all) enum ToneMappingMode {
+  Standard
+  Extended
+}
 
 #derive(@debug.Debug)
 pub(all) struct VertexAttribute {

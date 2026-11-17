@@ -1,0 +1,7 @@
+// The browser backend: `navigator.gpu`, reached through the host's own
+// WebGPU. It is a backend like any other, so it implements the same `Hal`
+// contract, and the API above it does not know which side it is on.
+// https://www.w3.org/TR/webgpu/#navigator-gpu
+import {
+  "moonbitstack/moonwgpu/hal",
+}

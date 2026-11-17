@@ -10,4 +10,6 @@ import {
 
 import {
   "moonbitstack/moonwgpu/hal/memory",
+  "moonbitstack/moonwgpu/hal/vulkan",
+  "moonbitstack/moonwgpu/web",
 } for "wbtest"

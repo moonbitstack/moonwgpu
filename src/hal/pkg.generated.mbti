@@ -20,6 +20,13 @@ pub fn HalError::missing(String) -> Self
 pub fn HalError::unsupported(String) -> Self
 
 // Types and methods
+pub struct Unbound {
+  name_ : String
+  reason_ : String
+}
+pub fn Unbound::new(name~ : String, reason? : String) -> Self
+pub fn Unbound::reason(Self) -> String
+pub impl Hal for Unbound
 
 // Type aliases
 
@@ -49,4 +56,14 @@ pub(open) trait Hal {
   fn submit(Self, Array[@types.Command]) -> Unit raise HalError
   fn read_texture(Self, @types.TextureId, @types.Origin3d, @types.Extent3d, Int32) -> Bytes raise HalError
   fn write_texture(Self, @types.TextureId, @types.Origin3d, @types.Extent3d, Int32, Bytes) -> Unit raise HalError
+}
+
+pub(open) trait Surface {
+  fn name(Self) -> String
+  fn size(Self) -> @types.Extent3d
+  fn configure(Self, @types.SurfaceConfiguration) -> Unit raise HalError
+  fn unconfigure(Self) -> Unit
+  fn capabilities(Self) -> @types.SurfaceCapabilities
+  fn acquire(Self) -> @types.SurfaceFrame raise HalError
+  fn present(Self, @types.TextureId) -> Unit raise HalError
 }

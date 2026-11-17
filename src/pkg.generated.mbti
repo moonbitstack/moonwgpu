@@ -59,18 +59,36 @@ pub struct Buffer {
   size : Int32
   usage : @types.BufferUsages
   mut mapped : Bytes?
+  mut mapped_offset : Int32
+  mut mapped_size : Int32
+  mut mapped_for_write : Bool
   mut destroyed : Bool
 }
 pub fn Buffer::destroy(Self) -> Unit
-pub fn Buffer::get_mapped_range(Self) -> Bytes raise @core.Refused
+pub fn Buffer::get_mapped_range(Self, offset? : Int32, size? : Int32) -> Bytes raise @core.Refused
 pub fn Buffer::id(Self) -> @types.BufferId
 pub fn Buffer::is_mapped(Self) -> Bool
+pub fn Buffer::map_async(Self, mode~ : @types.MapMode, offset? : Int32, size? : Int32) -> Unit raise @core.Refused
 pub fn Buffer::map_read(Self) -> Unit raise @core.Refused
 pub fn Buffer::map_state(Self) -> @types.MapState
 pub fn Buffer::map_write(Self, data~ : Bytes) -> Unit raise @core.Refused
 pub fn Buffer::size(Self) -> Int32
 pub fn Buffer::unmap(Self) -> Unit
 pub fn Buffer::usage(Self) -> @types.BufferUsages
+
+pub struct CanvasContext {
+  surface : &@hal.Surface
+  mut device : Device?
+  mut configuration : @types.SurfaceConfiguration?
+}
+pub fn CanvasContext::canvas(Self) -> String
+pub fn CanvasContext::capabilities(Self) -> @types.SurfaceCapabilities
+pub fn CanvasContext::configure(Self, device~ : Device, configuration~ : @types.SurfaceConfiguration) -> Unit raise @core.Refused
+pub fn CanvasContext::get_current_texture(Self) -> Texture raise @core.Refused
+pub fn CanvasContext::is_configured(Self) -> Bool
+pub fn CanvasContext::new(surface~ : &@hal.Surface) -> Self
+pub fn CanvasContext::present(Self, texture~ : Texture) -> Unit raise @core.Refused
+pub fn CanvasContext::unconfigure(Self) -> Unit
 
 #derive(@debug.Debug)
 pub(all) struct CommandBuffer {
@@ -154,6 +172,7 @@ pub fn Device::import_external_texture(Self, descriptor~ : @types.ExternalTextur
 pub fn Device::label(Self) -> String
 pub fn Device::limits(Self) -> @types.Limits
 pub fn Device::lost(Self) -> Bool
+pub fn Device::lost_info(Self) -> @types.DeviceLostInfo?
 pub fn Device::pop_error_scope(Self) -> Array[@core.Refused] raise @core.Refused
 pub fn Device::push_error_scope(Self, filter? : @types.ErrorFilter) -> Unit
 pub fn Device::queue(Self) -> Queue

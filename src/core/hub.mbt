@@ -284,6 +284,34 @@ pub fn Hub::write_buffer(
 }
 
 ///|
+/// Write back what a write mapping was given, when the mapping is dropped.
+///
+/// This is not `write_buffer`: a buffer mapped for writing carries `MAP_WRITE`
+/// and may carry nothing else, so asking for `COPY_DST` here would refuse the
+/// only write the buffer was ever meant to take. The range was checked when
+/// the mapping was taken; this checks it again against the same buffer, since
+/// the mapping outlives any amount of caller code.
+pub fn Hub::unmap_write(
+  self : Hub,
+  id : @types.BufferId,
+  offset : Int32,
+  data : Bytes,
+) -> Unit raise Refused {
+  self.ensure_alive()
+  let state = self.buffer(id)
+  require_int(
+    offset >= 0 && offset + data.length() <= state.descriptor.size,
+    @types.InvalidCopyRange,
+    "mapped offset + size",
+    state.descriptor.size,
+    offset + data.length(),
+  )
+  self.backend.write_buffer(id, offset, data) catch {
+    error => raise self.report(Refused::from_hal(error))
+  }
+}
+
+///|
 /// Read back `size` bytes at `offset`. The caller has checked that the buffer
 /// is mapped for reading; this is the native form of `getMappedRange`.
 pub fn Hub::read_buffer(
@@ -399,20 +427,43 @@ pub fn Hub::create_shader_module(
   descriptor : @types.ShaderModuleDescriptor,
 ) -> @types.ShaderModuleId raise Refused {
   self.ensure_alive()
-  require(
-    descriptor.kind == @types.ShaderSourceKind::Wgsl,
-    @types.InvalidShaderModule,
-    "descriptor.code",
-    "WGSL source",
-    "another language",
-  )
-  require(
-    !descriptor.source.is_empty(),
-    @types.InvalidShaderModule,
-    "descriptor.code",
-    "a non-empty module",
-    "an empty string",
-  )
+  match descriptor.code {
+    @types.Wgsl(text) =>
+      require(
+        !text.is_empty(),
+        @types.InvalidShaderModule,
+        "descriptor.code",
+        "a non-empty module",
+        "an empty string",
+      )
+    @types.SpirV(words) => {
+      require(
+        words.length() >= 4,
+        @types.InvalidShaderModule,
+        "descriptor.code",
+        "at least one SPIR-V word",
+        "fewer than four bytes",
+      )
+      require_int(
+        words.length() % 4 == 0,
+        @types.InvalidShaderModule,
+        "descriptor.code",
+        0,
+        words.length() % 4,
+      )
+      let magic = words[0].to_int() |
+        (words[1].to_int() << 8) |
+        (words[2].to_int() << 16) |
+        (words[3].to_int() << 24)
+      require_int(
+        magic == 0x07230203,
+        @types.InvalidShaderModule,
+        "descriptor.code, first word",
+        0x07230203,
+        magic,
+      )
+    }
+  }
   let id = self.backend.create_shader_module(descriptor) catch {
     error => raise self.report(Refused::from_hal(error))
   }

@@ -1,0 +1,12 @@
+// The Metal backend.
+//
+// Metal is the only API on Apple platforms, and the one with the smallest
+// impedance mismatch: pipelines take MSL text, which a shader translator can
+// emit without a binary format. What it needs is an Objective-C stub around
+// `MTLDevice`, `MTLCommandQueue` and `CAMetalLayer`, and the MSL that
+// `moonnaga` produces.
+//
+// https://developer.apple.com/documentation/metal
+import {
+  "moonbitstack/moonwgpu/hal",
+}

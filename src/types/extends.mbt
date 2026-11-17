@@ -865,3 +865,51 @@ pub extend CopyExternalImageSourceInfo with @debug.Debug::{to_repr}
 ///|
 #doc(hidden)
 pub extend CopyExternalImageDestInfo with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend ShaderSource with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend CanvasAlphaMode with Eq::{equal, not_equal}
+
+///|
+#doc(hidden)
+pub extend CanvasAlphaMode with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend ToneMappingMode with Eq::{equal, not_equal}
+
+///|
+#doc(hidden)
+pub extend ToneMappingMode with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend CanvasToneMapping with Eq::{equal, not_equal}
+
+///|
+#doc(hidden)
+pub extend CanvasToneMapping with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend SurfaceConfiguration with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend SurfaceCapabilities with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend SurfaceFrame with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend DeviceLostInfo with Eq::{equal, not_equal}
+
+///|
+#doc(hidden)
+pub extend DeviceLostInfo with @debug.Debug::{to_repr}

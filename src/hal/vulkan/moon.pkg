@@ -1,0 +1,12 @@
+// The Vulkan backend.
+//
+// Vulkan is the API this library expects to run on first: it is available on
+// Linux, Windows and Android, and Mesa's lavapipe gives the CI a software
+// implementation. What it needs before it can work is a stub of C functions
+// around the loader (`vkCreateDevice`, the command pool, the swap chain), the
+// SPIR-V that `moonnaga` produces, and a `VkInstance` per `Instance`.
+//
+// https://registry.khronos.org/vulkan/specs/latest/html/vkspec.html
+import {
+  "moonbitstack/moonwgpu/hal",
+}

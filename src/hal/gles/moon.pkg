@@ -1,0 +1,11 @@
+// The OpenGL ES backend.
+//
+// GLES is the fallback where Vulkan is absent or too old, and the one backend
+// that wants GLSL rather than SPIR-V. What it needs is a stub around the EGL
+// or WGL context, and a shader path: either SPIR-V through
+// `GL_ARB_gl_spirv`, or GLSL from a shader translator.
+//
+// https://registry.khronos.org/OpenGL/specs/es/
+import {
+  "moonbitstack/moonwgpu/hal",
+}

@@ -56,6 +56,25 @@ pub fn Device::lost(self : Device) -> Bool {
 }
 
 ///|
+/// `GPUDevice.lost`: why the device is gone, or `None` while it is alive.
+///
+/// The specification resolves a promise with this object; a device whose
+/// timeline runs in the caller's thread can answer it at once.
+/// https://www.w3.org/TR/webgpu/#dom-gpudevice-lost
+pub fn Device::lost_info(self : Device) -> @types.DeviceLostInfo? {
+  if self.hub.lost {
+    Some(
+      @types.DeviceLostInfo::new(
+        reason=@types.DeviceLostReason::Destroyed,
+        message="the device was destroyed",
+      ),
+    )
+  } else {
+    None
+  }
+}
+
+///|
 /// Whether the device has been destroyed, `GPUBufferMapState`'s neighbour in
 /// the specification's device object. A destroyed device is a lost one.
 /// https://www.w3.org/TR/webgpu/#dom-gpudevice-destroyed
@@ -130,6 +149,9 @@ pub fn Device::create_buffer(
     size: descriptor.size,
     usage: descriptor.usage,
     mapped: None,
+    mapped_offset: 0,
+    mapped_size: 0,
+    mapped_for_write: false,
     destroyed: false,
   }
 }
