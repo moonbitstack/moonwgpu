@@ -56,6 +56,47 @@ pub fn Device::lost(self : Device) -> Bool {
 }
 
 ///|
+/// Whether the device has been destroyed, `GPUBufferMapState`'s neighbour in
+/// the specification's device object. A destroyed device is a lost one.
+/// https://www.w3.org/TR/webgpu/#dom-gpudevice-destroyed
+pub fn Device::destroyed(self : Device) -> Bool {
+  self.hub.lost
+}
+
+///|
+/// The errors no error scope collected, oldest first. The specification delivers
+/// these to `onuncapturederror`; this library keeps them and hands them over.
+/// https://www.w3.org/TR/webgpu/#dom-gpudevice-onuncapturederror
+pub fn Device::uncaptured_errors(self : Device) -> Array[@core.Refused] {
+  self.hub.uncaptured_errors()
+}
+
+///|
+/// Set, or with `None` clear, the handler an uncaptured error is handed to.
+/// It stands where the specification's `onuncapturederror` event listener does,
+/// and runs on the thread that caused the error.
+pub fn Device::set_uncapturederror_handler(
+  self : Device,
+  handler : ((@core.Refused) -> Unit)?,
+) -> Unit {
+  self.hub.set_handler(handler)
+}
+
+///|
+/// The handler set by `set_uncapturederror_handler`, if any.
+pub fn Device::uncapturederror_handler(
+  self : Device,
+) -> ((@core.Refused) -> Unit)? {
+  self.hub.handler()
+}
+
+///|
+/// Forget the uncaptured errors kept so far.
+pub fn Device::clear_uncaptured_errors(self : Device) -> Unit {
+  self.hub.clear_uncaptured_errors()
+}
+
+///|
 /// Push an error scope: the errors the device itself generates while it is on
 /// top are collected for `pop_error_scope` instead of being lost.
 /// https://www.w3.org/TR/webgpu/#dom-gpudevice-pusherrorscope
@@ -124,6 +165,21 @@ pub fn Device::create_shader_module(
 }
 
 ///|
+/// `importExternalTexture`: take a frame a host decoded and hold it as a
+/// texture a bind group can name.
+///
+/// The frame is copied when it is imported, so the host may reuse its buffer as
+/// soon as this returns.
+/// https://www.w3.org/TR/webgpu/#dom-gpudevice-importexternaltexture
+pub fn Device::import_external_texture(
+  self : Device,
+  descriptor~ : @types.ExternalTextureDescriptor,
+) -> ExternalTexture raise @core.Refused {
+  let id = self.hub.import_external_texture(descriptor)
+  { device: self, id, label: descriptor.label, descriptor, expired: false, }
+}
+
+///|
 /// A `GPUBindGroupLayoutDescriptor` to a bind group layout.
 pub fn Device::create_bind_group_layout(
   self : Device,
@@ -171,6 +227,31 @@ pub fn Device::create_compute_pipeline(
 ) -> ComputePipeline raise @core.Refused {
   let id = self.hub.create_compute_pipeline(descriptor)
   { device: self, id, label: descriptor.label, }
+}
+
+///|
+/// `createRenderPipelineAsync`.
+///
+/// The specification's asynchronous form lets a compiler work off the device
+/// timeline. Nothing here compiles on another thread - the device timeline runs
+/// in the caller's - so this is the same call, kept so that a caller written
+/// against the specification compiles unchanged.
+/// https://www.w3.org/TR/webgpu/#dom-gpudevice-createrenderpipelineasync
+pub fn Device::create_render_pipeline_async(
+  self : Device,
+  descriptor~ : @types.RenderPipelineDescriptor,
+) -> RenderPipeline raise @core.Refused {
+  self.create_render_pipeline(descriptor~)
+}
+
+///|
+/// `createComputePipelineAsync`, for the same reason as the render form.
+/// https://www.w3.org/TR/webgpu/#dom-gpudevice-createcomputepipelineasync
+pub fn Device::create_compute_pipeline_async(
+  self : Device,
+  descriptor~ : @types.ComputePipelineDescriptor,
+) -> ComputePipeline raise @core.Refused {
+  self.create_compute_pipeline(descriptor~)
 }
 
 ///|

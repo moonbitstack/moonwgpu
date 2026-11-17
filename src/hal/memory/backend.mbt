@@ -47,6 +47,7 @@ pub struct Backend {
   render_pipelines : Map[UInt64, @types.RenderPipelineDescriptor]
   compute_pipelines : Map[UInt64, @types.ComputePipelineDescriptor]
   query_sets : Map[UInt64, @types.QuerySetDescriptor]
+  external_textures : Map[UInt64, @types.ExternalTextureDescriptor]
   submitted : Array[Array[@types.Command]]
   mut next_id : UInt64
 }
@@ -79,6 +80,7 @@ pub fn Backend::with_capabilities(capabilities : Capabilities) -> Backend {
     render_pipelines: Map([]),
     compute_pipelines: Map([]),
     query_sets: Map([]),
+    external_textures: Map([]),
     submitted: [],
     next_id: 1UL,
   }
@@ -326,6 +328,29 @@ pub impl @hal.Hal for Backend with fn create_query_set(self, descriptor) -> @typ
   let id = self.allocate()
   self.query_sets[id] = descriptor
   @types.QuerySetId::from_raw(id)
+}
+
+///|
+/// This backend has no shader compiler, so it has nothing to say about a
+/// module. A backend that compiles WGSL reports its diagnostics here.
+pub impl @hal.Hal for Backend with fn compilation_info(self, id) -> Array[
+  @types.CompilationMessage,
+] {
+  ignore(self)
+  ignore(id)
+  []
+}
+
+///|
+pub impl @hal.Hal for Backend with fn create_external_texture(self, descriptor) -> @types.ExternalTextureId raise @hal.HalError {
+  let id = self.allocate()
+  self.external_textures[id] = descriptor
+  @types.ExternalTextureId::from_raw(id)
+}
+
+///|
+pub impl @hal.Hal for Backend with fn destroy_external_texture(self, id) {
+  self.external_textures.remove(id.raw()) |> ignore
 }
 
 ///|

@@ -13,6 +13,8 @@ pub fn array_layer_count_of_texture(@types.TextureDescriptor) -> Int32
 
 pub fn buffer_usage_names() -> Array[(String, UInt32)]
 
+pub fn immediates(Int32, Bytes, Int32, Int32?) -> @types.SetImmediates raise Refused
+
 pub fn invalid(@types.ErrorKind, String, String, String) -> Refused
 
 pub fn require(Bool, @types.ErrorKind, String, String, String) -> Unit raise Refused
@@ -84,6 +86,11 @@ pub struct ErrorScope {
   errors : Array[Refused]
 }
 
+pub struct ExternalTextureState {
+  descriptor : @types.ExternalTextureDescriptor
+  mut destroyed : Bool
+}
+
 pub struct Frame {
   commands : Array[@types.Command]
   mut open : Bool
@@ -111,13 +118,19 @@ pub struct Hub {
   render_pipelines : Map[UInt64, @types.RenderPipelineDescriptor]
   compute_pipelines : Map[UInt64, @types.ComputePipelineDescriptor]
   query_sets : Map[UInt64, @types.QuerySetDescriptor]
+  external_textures : Map[UInt64, ExternalTextureState]
   mut lost : Bool
   scopes : Array[ErrorScope]
+  uncaptured : Array[Refused]
+  mut handler : ((Refused) -> Unit)?
 }
 pub fn Hub::backend_name(Self) -> String
 pub fn Hub::bind_group_layout(Self, @types.BindGroupLayoutId) -> BindGroupLayoutState raise Refused
 pub fn Hub::buffer(Self, @types.BufferId) -> BufferState raise Refused
+pub fn Hub::clear_uncaptured_errors(Self) -> Unit
+pub fn Hub::compilation_info(Self, @types.ShaderModuleId) -> @types.CompilationInfo raise Refused
 pub fn Hub::compute_pipeline_layout(Self, @types.ComputePipelineId) -> @types.PipelineLayoutId? raise Refused
+pub fn Hub::copy_external_image_to_texture(Self, @types.CopyExternalImageSourceInfo, @types.CopyExternalImageDestInfo, @types.Extent3d) -> Unit raise Refused
 pub fn Hub::create_bind_group(Self, @types.BindGroupDescriptor) -> @types.BindGroupId raise Refused
 pub fn Hub::create_bind_group_layout(Self, @types.BindGroupLayoutDescriptor) -> @types.BindGroupLayoutId raise Refused
 pub fn Hub::create_buffer(Self, @types.BufferDescriptor) -> @types.BufferId raise Refused
@@ -130,10 +143,14 @@ pub fn Hub::create_shader_module(Self, @types.ShaderModuleDescriptor) -> @types.
 pub fn Hub::create_texture(Self, @types.TextureDescriptor) -> @types.TextureId raise Refused
 pub fn Hub::create_texture_view(Self, @types.TextureId, @types.TextureViewDescriptor) -> @types.TextureViewId raise Refused
 pub fn Hub::destroy_buffer(Self, @types.BufferId) -> Unit
+pub fn Hub::destroy_external_texture(Self, @types.ExternalTextureId) -> Unit
 pub fn Hub::destroy_query_set(Self, @types.QuerySetId) -> Unit
 pub fn Hub::destroy_texture(Self, @types.TextureId) -> Unit
 pub fn Hub::ensure_alive(Self) -> Unit raise Refused
+pub fn Hub::external_texture(Self, @types.ExternalTextureId) -> ExternalTextureState raise Refused
 pub fn Hub::features(Self) -> @types.Features
+pub fn Hub::handler(Self) -> ((Refused) -> Unit)?
+pub fn Hub::import_external_texture(Self, @types.ExternalTextureDescriptor) -> @types.ExternalTextureId raise Refused
 pub fn Hub::limits(Self) -> @types.Limits
 pub fn Hub::lose(Self) -> Unit
 pub fn Hub::new(&@hal.Hal, @types.Limits, @types.Features) -> Self
@@ -142,8 +159,10 @@ pub fn Hub::pop_error_scope(Self) -> Array[Refused] raise Refused
 pub fn Hub::push_error_scope(Self, @types.ErrorFilter) -> Unit
 pub fn Hub::read_buffer(Self, @types.BufferId, Int32, Int32) -> Bytes raise Refused
 pub fn Hub::render_pipeline_layout(Self, @types.RenderPipelineId) -> @types.PipelineLayoutId? raise Refused
+pub fn Hub::set_handler(Self, ((Refused) -> Unit)?) -> Unit
 pub fn Hub::submit(Self, Array[@types.Command]) -> Unit raise Refused
 pub fn Hub::texture(Self, @types.TextureId) -> TextureState raise Refused
+pub fn Hub::uncaptured_errors(Self) -> Array[Refused]
 pub fn Hub::write_buffer(Self, @types.BufferId, Int32, Bytes) -> Unit raise Refused
 pub fn Hub::write_texture(Self, @types.TexelCopyTextureInfo, Bytes, @types.TexelCopyBufferLayout) -> Unit raise Refused
 

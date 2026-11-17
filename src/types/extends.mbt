@@ -817,3 +817,51 @@ pub extend TextureFormat with Show::{to_string, output}
 ///|
 #doc(hidden)
 pub extend VertexFormat with Show::{to_string, output}
+
+///|
+#doc(hidden)
+pub extend PredefinedColorSpace with Eq::{equal, not_equal}
+
+///|
+#doc(hidden)
+pub extend PredefinedColorSpace with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend ExternalTextureId with Eq::{equal, not_equal}
+
+///|
+#doc(hidden)
+pub extend ExternalTextureId with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend CompilationMessage with Eq::{equal, not_equal}
+
+///|
+#doc(hidden)
+pub extend CompilationMessage with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend CompilationInfo with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend ExternalImage with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend ExternalTextureDescriptor with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend SetImmediates with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend CopyExternalImageSourceInfo with @debug.Debug::{to_repr}
+
+///|
+#doc(hidden)
+pub extend CopyExternalImageDestInfo with @debug.Debug::{to_repr}

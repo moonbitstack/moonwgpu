@@ -98,6 +98,23 @@ pub fn RenderBundleEncoder::set_bind_group(
 }
 
 ///|
+/// `setImmediates`, recorded into the bundle.
+pub fn RenderBundleEncoder::set_immediates(
+  self : RenderBundleEncoder,
+  range_offset~ : Int32,
+  data~ : Bytes,
+  data_offset~ : Int32 = 0,
+  data_size? : Int32,
+) -> Unit raise @core.Refused {
+  self.check_open()
+  self.commands.push(
+    @types.RenderCommand::SetImmediates(
+      @core.immediates(range_offset, data, data_offset, data_size),
+    ),
+  )
+}
+
+///|
 /// `setVertexBuffer`.
 pub fn RenderBundleEncoder::set_vertex_buffer(
   self : RenderBundleEncoder,

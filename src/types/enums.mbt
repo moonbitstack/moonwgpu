@@ -275,6 +275,24 @@ pub(all) enum ShaderSourceKind {
 }
 
 ///|
+/// `PredefinedColorSpace`: the colour space an external image is converted to
+/// before it is sampled.
+#derive(Eq, Debug)
+pub(all) enum PredefinedColorSpace {
+  Srgb
+  DisplayP3
+}
+
+///|
+/// The name the specification prints for a colour space, as in `"srgb"`.
+pub fn PredefinedColorSpace::name(self : PredefinedColorSpace) -> String {
+  match self {
+    Srgb => "srgb"
+    DisplayP3 => "display-p3"
+  }
+}
+
+///|
 /// `GPUBufferMapState`: whether a buffer is mapped, waiting to be, or not
 /// mapped at all.
 #derive(Eq, Debug)

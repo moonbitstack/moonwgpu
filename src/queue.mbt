@@ -44,6 +44,23 @@ pub fn Queue::write_texture(
 }
 
 ///|
+/// `copyExternalImageToTexture`: move the pixels of a decoded frame into a
+/// texture, before the next submission.
+///
+/// The rows need no alignment of their own: the frame is copied texel by texel,
+/// which is why the specification allows it on a queue rather than through a
+/// buffer.
+/// https://www.w3.org/TR/webgpu/#dom-gpuqueue-copyexternalimagetotexture
+pub fn Queue::copy_external_image_to_texture(
+  self : Queue,
+  source~ : @types.CopyExternalImageSourceInfo,
+  destination~ : @types.CopyExternalImageDestInfo,
+  copy_size~ : @types.Extent3d,
+) -> Unit raise @core.Refused {
+  self.device.hub.copy_external_image_to_texture(source, destination, copy_size)
+}
+
+///|
 /// Wait until everything submitted so far has finished.
 ///
 /// The specification returns a promise here because a real device works later.

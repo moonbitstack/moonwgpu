@@ -183,6 +183,22 @@ pub fn QuerySetId::from_raw(raw : UInt64) -> QuerySetId {
 }
 
 ///|
+/// The identity of an external texture.
+#derive(Eq, Debug)
+pub struct ExternalTextureId(UInt64)
+
+///|
+pub fn ExternalTextureId::raw(self : ExternalTextureId) -> UInt64 {
+  self.0
+}
+
+///|
+/// An identity from the integer the backend allocated.
+pub fn ExternalTextureId::from_raw(raw : UInt64) -> ExternalTextureId {
+  ExternalTextureId(raw)
+}
+
+///|
 /// A `GPUBufferDescriptor`.
 #derive(Debug)
 pub(all) struct BufferDescriptor {
@@ -371,4 +387,115 @@ pub fn QuerySetDescriptor::new(
   label~ : String = "",
 ) -> QuerySetDescriptor {
   { label, kind, count, }
+}
+
+///|
+/// One `GPUCompilationMessage`: what a shader compiler said about one place in
+/// a module.
+///
+/// `line_num` and `line_pos` are one-based, as in the specification; an offset
+/// without a line has `line_num` zero.
+#derive(Eq, Debug)
+pub(all) struct CompilationMessage {
+  message : String
+  kind : CompilationMessageType
+  line_num : Int32
+  line_pos : Int32
+  offset : Int32
+  length : Int32
+}
+
+///|
+pub fn CompilationMessage::new(
+  message~ : String,
+  kind~ : CompilationMessageType,
+  line_num~ : Int32 = 1,
+  line_pos~ : Int32 = 1,
+  offset~ : Int32 = 0,
+  length~ : Int32 = 0,
+) -> CompilationMessage {
+  { message, kind, line_num, line_pos, offset, length, }
+}
+
+///|
+/// Whether this message stops the module from being built.
+pub fn CompilationMessage::is_error(self : CompilationMessage) -> Bool {
+  self.kind == CompilationMessageType::Error
+}
+
+///|
+/// `GPUCompilationInfo`: everything the compiler said about one module, in the
+/// order it said it.
+#derive(Debug)
+pub(all) struct CompilationInfo {
+  messages : Array[CompilationMessage]
+}
+
+///|
+pub fn CompilationInfo::new(
+  messages~ : Array[CompilationMessage] = [],
+) -> CompilationInfo {
+  { messages, }
+}
+
+///|
+/// Whether any message is an error, in which case the module cannot be used.
+pub fn CompilationInfo::has_errors(self : CompilationInfo) -> Bool {
+  for message in self.messages {
+    if message.is_error() {
+      return true
+    }
+  }
+  false
+}
+
+///|
+/// The pixels a host hands over for an external image.
+///
+/// The specification's source is an `HTMLVideoElement` or a `VideoFrame`; a
+/// native host has neither, so it hands over the frame it decoded instead: the
+/// size of the frame, the format its pixels are in, and the bytes themselves,
+/// packed row by row with no padding.
+#derive(Debug)
+pub(all) struct ExternalImage {
+  label : String
+  size : Extent3d
+  format : TextureFormat
+  data : Bytes
+}
+
+///|
+pub fn ExternalImage::new(
+  size~ : Extent3d,
+  format~ : TextureFormat,
+  data~ : Bytes,
+  label~ : String = "",
+) -> ExternalImage {
+  { label, size, format, data, }
+}
+
+///|
+/// The bytes one row of this image occupies, with no padding.
+pub fn ExternalImage::row_bytes(self : ExternalImage) -> Int32 {
+  let info = self.format.info()
+  let blocks = (self.size.width + info.block_width - 1) / info.block_width
+  blocks * info.bytes_per_block
+}
+
+///|
+/// A `GPUExternalTextureDescriptor`.
+#derive(Debug)
+pub(all) struct ExternalTextureDescriptor {
+  label : String
+  image : ExternalImage
+  color_space : PredefinedColorSpace
+}
+
+///|
+pub fn ExternalTextureDescriptor::new(
+  image~ : ExternalImage,
+  color_space~ : PredefinedColorSpace = PredefinedColorSpace::Srgb,
+  label~ : String = "",
+) -> ExternalTextureDescriptor {
+  { label, image, color_space, }
 }

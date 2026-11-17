@@ -20,3 +20,15 @@ pub fn ShaderModule::id(self : ShaderModule) -> @types.ShaderModuleId {
 pub fn ShaderModule::label(self : ShaderModule) -> String {
   self.label
 }
+
+///|
+/// `getCompilationInfo`: what the backend's compiler said about this module.
+///
+/// A module with an error in it is still created, as in the specification; the
+/// messages are how a caller learns that a pipeline built from it will fail.
+/// https://www.w3.org/TR/webgpu/#dom-gpushadermodule-getcompilationinfo
+pub fn ShaderModule::get_compilation_info(
+  self : ShaderModule,
+) -> @types.CompilationInfo raise @core.Refused {
+  self.device.hub.compilation_info(self.id)
+}

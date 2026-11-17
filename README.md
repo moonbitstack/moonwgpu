@@ -83,6 +83,43 @@ test {
 }
 ```
 
+## A frame from the host
+
+Where a browser imports a video element, a native host hands over the frame it
+already decoded. The frame is copied when it is imported, so the host may reuse
+its buffer as soon as the call returns, and the texture lives until the host
+says the frame has moved on.
+
+```moonbit check
+test {
+  let backend = @memory.Backend::new()
+  let device = @moonwgpu.Instance::new(backend~).request_adapter().request_device()
+  let image = @types.ExternalImage::new(
+    size=@types.Extent3d::new(width=2, height=1),
+    format=@types.TextureFormat::Rgba8unorm,
+    data=b"\xff\x00\x00\xff\x00\xff\x00\xff",
+  )
+  let frame = device.import_external_texture(
+    descriptor=@types.ExternalTextureDescriptor::new(image~),
+  )
+  let target = device.create_texture(
+    descriptor=@types.TextureDescriptor::new(
+      size=@types.Extent3d::new(width=2, height=1),
+      format=@types.TextureFormat::Rgba8unorm,
+      usage=@types.TextureUsages::copy_dst(),
+    ),
+  )
+  device.queue().copy_external_image_to_texture(
+    source=@types.CopyExternalImageSourceInfo::new(image~),
+    destination=@types.CopyExternalImageDestInfo::new(texture=target.id()),
+    copy_size=@types.Extent3d::new(width=2, height=1),
+  )
+  assert_false(frame.is_expired())
+  frame.expire()
+  assert_true(frame.is_expired())
+}
+```
+
 ## What the device refuses
 
 Validation is not a mode: every call that the specification validates raises a
@@ -129,6 +166,7 @@ test {
 | `RenderPassEncoder`, `ComputePassEncoder` | One pass: pipeline, bindings, draws, dispatches |
 | `RenderBundleEncoder`, `RenderBundle` | A recorded run of draws any pass can execute |
 | `QuerySet` | Timestamps and occlusion results |
+| `ExternalTexture` | A decoded frame a host handed over, bindable until it expires |
 
 ## What runs today
 
@@ -146,6 +184,9 @@ keeps the seam (`hal`'s contract) rather than pretending.
 | Copies and clears, executed byte exactly on the memory backend | done |
 | Mapping a buffer for read-back | done |
 | Query sets, timestamps, occlusion queries | recorded and validated |
+| Shader compilation info (`getCompilationInfo`) | reported by a backend that compiles; empty without one |
+| Immediate constants (`setImmediates`) | recorded and validated in passes and bundles |
+| External frames (`importExternalTexture`, `copyExternalImageToTexture`) | copied texel by texel, with row flipping and alpha premultiplication |
 | Limits, features and their dependencies | the specification's full tables |
 | Texture and vertex format tables | every format the specification defines |
 | Executing a shader | needs a WGSL front end, which is its own library |

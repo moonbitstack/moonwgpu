@@ -25,6 +25,7 @@ pub struct Backend {
   render_pipelines : Map[UInt64, @types.RenderPipelineDescriptor]
   compute_pipelines : Map[UInt64, @types.ComputePipelineDescriptor]
   query_sets : Map[UInt64, @types.QuerySetDescriptor]
+  external_textures : Map[UInt64, @types.ExternalTextureDescriptor]
   submitted : Array[Array[@types.Command]]
   mut next_id : UInt64
 }

@@ -23,8 +23,11 @@ pub struct Hub {
   render_pipelines : Map[UInt64, @types.RenderPipelineDescriptor]
   compute_pipelines : Map[UInt64, @types.ComputePipelineDescriptor]
   query_sets : Map[UInt64, @types.QuerySetDescriptor]
+  external_textures : Map[UInt64, ExternalTextureState]
   mut lost : Bool
   scopes : Array[ErrorScope]
+  uncaptured : Array[Refused]
+  mut handler : ((Refused) -> Unit)?
 }
 
 ///|
@@ -64,8 +67,10 @@ pub fn Hub::pop_error_scope(self : Hub) -> Array[Refused] raise Refused {
 }
 
 ///|
-/// Record an error in the innermost scope that accepts its filter.
+/// Record an error in the innermost scope that accepts its filter; an error no
+/// scope asked for is the device's own and is kept for `uncapturederror`.
 fn Hub::report(self : Hub, error : Refused) -> Refused {
+  let mut captured = false
   if !self.scopes.is_empty() {
     let scope = self.scopes[self.scopes.length() - 1]
     let matches = match (scope.filter, error) {
@@ -76,9 +81,41 @@ fn Hub::report(self : Hub, error : Refused) -> Refused {
     }
     if matches {
       scope.errors.push(error)
+      captured = true
+    }
+  }
+  if !captured {
+    self.uncaptured.push(error)
+    match self.handler {
+      Some(handler) => handler(error)
+      None => ()
     }
   }
   error
+}
+
+///|
+/// The errors no error scope collected, oldest first.
+pub fn Hub::uncaptured_errors(self : Hub) -> Array[Refused] {
+  self.uncaptured.copy()
+}
+
+///|
+/// The handler an uncaptured error is handed to, if one is set.
+pub fn Hub::handler(self : Hub) -> ((Refused) -> Unit)? {
+  self.handler
+}
+
+///|
+/// Set, or with `None` clear, the handler an uncaptured error is handed to.
+pub fn Hub::set_handler(self : Hub, handler : ((Refused) -> Unit)?) -> Unit {
+  self.handler = handler
+}
+
+///|
+/// Forget the errors kept so far.
+pub fn Hub::clear_uncaptured_errors(self : Hub) -> Unit {
+  self.uncaptured.clear()
 }
 
 ///|
@@ -104,8 +141,11 @@ pub fn Hub::new(
     render_pipelines: Map([]),
     compute_pipelines: Map([]),
     query_sets: Map([]),
+    external_textures: Map([]),
     lost: false,
     scopes: [],
+    uncaptured: [],
+    handler: None,
   }
 }
 
@@ -378,6 +418,21 @@ pub fn Hub::create_shader_module(
   }
   self.shader_modules[id.raw()] = { descriptor, }
   id
+}
+
+///|
+/// `getCompilationInfo`: what the backend's compiler said about a module.
+///
+/// A backend without a compiler reports no message, which the trait documents;
+/// the module is then only as good as the caller's own checking.
+/// https://www.w3.org/TR/webgpu/#dom-gpushadermodule-getcompilationinfo
+pub fn Hub::compilation_info(
+  self : Hub,
+  id : @types.ShaderModuleId,
+) -> @types.CompilationInfo raise Refused {
+  self.ensure_alive()
+  self.require_shader(id)
+  { messages: self.backend.compilation_info(id), }
 }
 
 ///|

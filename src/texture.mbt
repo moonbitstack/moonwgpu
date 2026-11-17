@@ -23,6 +23,25 @@ pub fn Texture::size(self : Texture) -> @types.Extent3d {
 }
 
 ///|
+/// The texture's width, `GPUTexture.width`.
+pub fn Texture::width(self : Texture) -> Int32 {
+  self.descriptor.size.width
+}
+
+///|
+/// The texture's height, `GPUTexture.height`.
+pub fn Texture::height(self : Texture) -> Int32 {
+  self.descriptor.size.height
+}
+
+///|
+/// How many array layers, or depth slices, the texture has.
+/// `GPUTexture.depthOrArrayLayers`.
+pub fn Texture::depth_or_array_layers(self : Texture) -> Int32 {
+  self.descriptor.size.depth_or_array_layers
+}
+
+///|
 /// The texel format.
 pub fn Texture::format(self : Texture) -> @types.TextureFormat {
   self.descriptor.format

@@ -97,6 +97,22 @@ pub fn Instance::backend_name(self : Instance) -> String {
 }
 
 ///|
+/// `getPreferredCanvasFormat`: the format a canvas of this host wants its
+/// textures in.
+///
+/// Where a browser answers with the format its compositor accepts - `bgra8unorm`
+/// on every platform whose surfaces are 32-bit BGRA - a native host answers for
+/// itself, and this library keeps the same layout so that a canvas written here
+/// travels without a channel swap.
+/// https://www.w3.org/TR/webgpu/#dom-gpu-getpreferredcanvasformat
+pub fn Instance::get_preferred_canvas_format(
+  self : Instance,
+) -> @types.TextureFormat {
+  ignore(self)
+  @types.TextureFormat::Bgra8unorm
+}
+
+///|
 /// Ask for an adapter. A backend that offers exactly one adapter hands it over
 /// whatever the options say; the options exist so that a host with several can
 /// pick.

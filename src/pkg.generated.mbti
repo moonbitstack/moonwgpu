@@ -113,6 +113,7 @@ pub fn ComputePassEncoder::label(Self) -> String
 pub fn ComputePassEncoder::pop_debug_group(Self) -> Unit raise @core.Refused
 pub fn ComputePassEncoder::push_debug_group(Self, group_label~ : String) -> Unit raise @core.Refused
 pub fn ComputePassEncoder::set_bind_group(Self, index~ : Int32, bind_group~ : BindGroup, dynamic_offsets? : Array[Int32]) -> Unit raise @core.Refused
+pub fn ComputePassEncoder::set_immediates(Self, range_offset~ : Int32, data~ : Bytes, data_offset? : Int32, data_size? : Int32) -> Unit raise @core.Refused
 pub fn ComputePassEncoder::set_pipeline(Self, pipeline~ : ComputePipeline) -> Unit raise @core.Refused
 pub fn ComputePassEncoder::write_timestamp(Self, query_set~ : QuerySet, query_index~ : Int32) -> Unit raise @core.Refused
 
@@ -131,26 +132,34 @@ pub struct Device {
   default_queue_label : String
 }
 pub fn Device::backend_name(Self) -> String
+pub fn Device::clear_uncaptured_errors(Self) -> Unit
 pub fn Device::create_bind_group(Self, descriptor~ : @types.BindGroupDescriptor) -> BindGroup raise @core.Refused
 pub fn Device::create_bind_group_layout(Self, descriptor~ : @types.BindGroupLayoutDescriptor) -> BindGroupLayout raise @core.Refused
 pub fn Device::create_buffer(Self, descriptor~ : @types.BufferDescriptor) -> Buffer raise @core.Refused
 pub fn Device::create_command_encoder(Self, label? : String) -> CommandEncoder
 pub fn Device::create_compute_pipeline(Self, descriptor~ : @types.ComputePipelineDescriptor) -> ComputePipeline raise @core.Refused
+pub fn Device::create_compute_pipeline_async(Self, descriptor~ : @types.ComputePipelineDescriptor) -> ComputePipeline raise @core.Refused
 pub fn Device::create_pipeline_layout(Self, descriptor~ : @types.PipelineLayoutDescriptor) -> PipelineLayout raise @core.Refused
 pub fn Device::create_query_set(Self, descriptor~ : @types.QuerySetDescriptor) -> QuerySet raise @core.Refused
 pub fn Device::create_render_bundle_encoder(Self, descriptor~ : RenderBundleEncoderDescriptor) -> RenderBundleEncoder raise @core.Refused
 pub fn Device::create_render_pipeline(Self, descriptor~ : @types.RenderPipelineDescriptor) -> RenderPipeline raise @core.Refused
+pub fn Device::create_render_pipeline_async(Self, descriptor~ : @types.RenderPipelineDescriptor) -> RenderPipeline raise @core.Refused
 pub fn Device::create_sampler(Self, descriptor? : @types.SamplerDescriptor) -> Sampler raise @core.Refused
 pub fn Device::create_shader_module(Self, descriptor~ : @types.ShaderModuleDescriptor) -> ShaderModule raise @core.Refused
 pub fn Device::create_texture(Self, descriptor~ : @types.TextureDescriptor) -> Texture raise @core.Refused
 pub fn Device::destroy(Self) -> Unit
+pub fn Device::destroyed(Self) -> Bool
 pub fn Device::features(Self) -> @types.Features
+pub fn Device::import_external_texture(Self, descriptor~ : @types.ExternalTextureDescriptor) -> ExternalTexture raise @core.Refused
 pub fn Device::label(Self) -> String
 pub fn Device::limits(Self) -> @types.Limits
 pub fn Device::lost(Self) -> Bool
 pub fn Device::pop_error_scope(Self) -> Array[@core.Refused] raise @core.Refused
 pub fn Device::push_error_scope(Self, filter? : @types.ErrorFilter) -> Unit
 pub fn Device::queue(Self) -> Queue
+pub fn Device::set_uncapturederror_handler(Self, ((@core.Refused) -> Unit)?) -> Unit
+pub fn Device::uncaptured_errors(Self) -> Array[@core.Refused]
+pub fn Device::uncapturederror_handler(Self) -> ((@core.Refused) -> Unit)?
 
 #derive(@debug.Debug)
 pub(all) struct DeviceDescriptor {
@@ -161,11 +170,26 @@ pub(all) struct DeviceDescriptor {
 }
 pub fn DeviceDescriptor::new(label? : String, required_features? : @types.Features, required_limits? : @types.Limits, default_queue_label? : String) -> Self
 
+pub struct ExternalTexture {
+  device : Device
+  id : @types.ExternalTextureId
+  label : String
+  descriptor : @types.ExternalTextureDescriptor
+  mut expired : Bool
+}
+pub fn ExternalTexture::color_space(Self) -> @types.PredefinedColorSpace
+pub fn ExternalTexture::descriptor(Self) -> @types.ExternalTextureDescriptor
+pub fn ExternalTexture::expire(Self) -> Unit
+pub fn ExternalTexture::id(Self) -> @types.ExternalTextureId
+pub fn ExternalTexture::is_expired(Self) -> Bool
+pub fn ExternalTexture::label(Self) -> String
+
 pub struct Instance {
   backend : &@hal.Hal
   label : String
 }
 pub fn Instance::backend_name(Self) -> String
+pub fn Instance::get_preferred_canvas_format(Self) -> @types.TextureFormat
 pub fn Instance::new(backend~ : &@hal.Hal, label? : String) -> Self
 pub fn Instance::request_adapter(Self, options? : RequestAdapterOptions) -> Adapter
 
@@ -191,6 +215,7 @@ pub struct Queue {
   device : Device
   label : String
 }
+pub fn Queue::copy_external_image_to_texture(Self, source~ : @types.CopyExternalImageSourceInfo, destination~ : @types.CopyExternalImageDestInfo, copy_size~ : @types.Extent3d) -> Unit raise @core.Refused
 pub fn Queue::label(Self) -> String
 pub fn Queue::on_submitted_work_done(Self) -> Unit
 pub fn Queue::submit(Self, command_buffers~ : Array[CommandBuffer]) -> Unit raise @core.Refused
@@ -213,6 +238,7 @@ pub fn RenderBundleEncoder::label(Self) -> String
 pub fn RenderBundleEncoder::pop_debug_group(Self) -> Unit raise @core.Refused
 pub fn RenderBundleEncoder::push_debug_group(Self, group_label~ : String) -> Unit raise @core.Refused
 pub fn RenderBundleEncoder::set_bind_group(Self, index~ : Int32, bind_group~ : BindGroup, dynamic_offsets? : Array[Int32]) -> Unit raise @core.Refused
+pub fn RenderBundleEncoder::set_immediates(Self, range_offset~ : Int32, data~ : Bytes, data_offset? : Int32, data_size? : Int32) -> Unit raise @core.Refused
 pub fn RenderBundleEncoder::set_index_buffer(Self, buffer~ : Buffer, format~ : @types.IndexFormat, offset? : Int32, size? : Int32) -> Unit raise @core.Refused
 pub fn RenderBundleEncoder::set_pipeline(Self, pipeline~ : RenderPipeline) -> Unit raise @core.Refused
 pub fn RenderBundleEncoder::set_vertex_buffer(Self, slot~ : Int32, buffer~ : Buffer, offset? : Int32, size? : Int32) -> Unit raise @core.Refused
@@ -249,6 +275,7 @@ pub fn RenderPassEncoder::pop_debug_group(Self) -> Unit raise @core.Refused
 pub fn RenderPassEncoder::push_debug_group(Self, group_label~ : String) -> Unit raise @core.Refused
 pub fn RenderPassEncoder::set_bind_group(Self, index~ : Int32, bind_group~ : BindGroup, dynamic_offsets? : Array[Int32]) -> Unit raise @core.Refused
 pub fn RenderPassEncoder::set_blend_constant(Self, color~ : @types.Color) -> Unit raise @core.Refused
+pub fn RenderPassEncoder::set_immediates(Self, range_offset~ : Int32, data~ : Bytes, data_offset? : Int32, data_size? : Int32) -> Unit raise @core.Refused
 pub fn RenderPassEncoder::set_index_buffer(Self, buffer~ : Buffer, format~ : @types.IndexFormat, offset? : Int32, size? : Int32) -> Unit raise @core.Refused
 pub fn RenderPassEncoder::set_pipeline(Self, pipeline~ : RenderPipeline) -> Unit raise @core.Refused
 pub fn RenderPassEncoder::set_scissor_rect(Self, x~ : Int32, y~ : Int32, width~ : Int32, height~ : Int32) -> Unit raise @core.Refused
@@ -288,6 +315,7 @@ pub struct ShaderModule {
   id : @types.ShaderModuleId
   label : String
 }
+pub fn ShaderModule::get_compilation_info(Self) -> @types.CompilationInfo raise @core.Refused
 pub fn ShaderModule::id(Self) -> @types.ShaderModuleId
 pub fn ShaderModule::label(Self) -> String
 
@@ -298,14 +326,17 @@ pub struct Texture {
   mut destroyed : Bool
 }
 pub fn Texture::create_view(Self, descriptor? : @types.TextureViewDescriptor) -> TextureView raise @core.Refused
+pub fn Texture::depth_or_array_layers(Self) -> Int32
 pub fn Texture::destroy(Self) -> Unit
 pub fn Texture::dimension(Self) -> @types.TextureDimension
 pub fn Texture::format(Self) -> @types.TextureFormat
+pub fn Texture::height(Self) -> Int32
 pub fn Texture::id(Self) -> @types.TextureId
 pub fn Texture::mip_level_count(Self) -> Int32
 pub fn Texture::sample_count(Self) -> Int32
 pub fn Texture::size(Self) -> @types.Extent3d
 pub fn Texture::usage(Self) -> @types.TextureUsages
+pub fn Texture::width(Self) -> Int32
 
 pub struct TextureView {
   device : Device

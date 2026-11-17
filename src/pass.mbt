@@ -65,6 +65,24 @@ pub fn RenderPassEncoder::set_bind_group(
 }
 
 ///|
+/// `setImmediates`: load bytes into the immediate constants of the bind group
+/// that was bound last.
+pub fn RenderPassEncoder::set_immediates(
+  self : RenderPassEncoder,
+  range_offset~ : Int32,
+  data~ : Bytes,
+  data_offset~ : Int32 = 0,
+  data_size? : Int32,
+) -> Unit raise @core.Refused {
+  self.check_open()
+  self.commands.push(
+    @types.RenderCommand::SetImmediates(
+      @core.immediates(range_offset, data, data_offset, data_size),
+    ),
+  )
+}
+
+///|
 /// `setVertexBuffer`.
 pub fn RenderPassEncoder::set_vertex_buffer(
   self : RenderPassEncoder,
@@ -360,6 +378,23 @@ pub fn ComputePassEncoder::set_bind_group(
       group: bind_group.id,
       dynamic_offsets,
     }),
+  )
+}
+
+///|
+/// `setImmediates`, for a compute pass.
+pub fn ComputePassEncoder::set_immediates(
+  self : ComputePassEncoder,
+  range_offset~ : Int32,
+  data~ : Bytes,
+  data_offset~ : Int32 = 0,
+  data_size? : Int32,
+) -> Unit raise @core.Refused {
+  self.check_open()
+  self.commands.push(
+    @types.ComputeCommand::SetImmediates(
+      @core.immediates(range_offset, data, data_offset, data_size),
+    ),
   )
 }
 

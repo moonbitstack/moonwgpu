@@ -71,12 +71,23 @@ pub(open) trait Hal {
   fn create_texture_view(Self, @types.TextureId, @types.TextureViewDescriptor) -> @types.TextureViewId raise HalError
   fn create_sampler(Self, @types.SamplerDescriptor) -> @types.SamplerId raise HalError
   fn create_shader_module(Self, @types.ShaderModuleDescriptor) -> @types.ShaderModuleId raise HalError
+  ///|
+  /// What the backend's shader compiler said about a module. A backend without
+  /// a compiler reports nothing, which is not the same as reporting success:
+  /// the module is then only as good as the caller's own checking.
+  fn compilation_info(Self, @types.ShaderModuleId) -> Array[
+    @types.CompilationMessage,
+  ]
   fn create_bind_group_layout(Self, @types.BindGroupLayoutDescriptor) -> @types.BindGroupLayoutId raise HalError
   fn create_bind_group(Self, @types.BindGroupDescriptor) -> @types.BindGroupId raise HalError
   fn create_pipeline_layout(Self, @types.PipelineLayoutDescriptor) -> @types.PipelineLayoutId raise HalError
   fn create_render_pipeline(Self, @types.RenderPipelineDescriptor) -> @types.RenderPipelineId raise HalError
   fn create_compute_pipeline(Self, @types.ComputePipelineDescriptor) -> @types.ComputePipelineId raise HalError
   fn create_query_set(Self, @types.QuerySetDescriptor) -> @types.QuerySetId raise HalError
+  ///|
+  /// Take a frame a host decoded and hold it as a texture the caller can bind.
+  fn create_external_texture(Self, @types.ExternalTextureDescriptor) -> @types.ExternalTextureId raise HalError
+  fn destroy_external_texture(Self, @types.ExternalTextureId) -> Unit
   ///|
   /// Run the commands in order. Every resource the commands name exists: the
   /// layer above has already refused a command buffer that outlives one.

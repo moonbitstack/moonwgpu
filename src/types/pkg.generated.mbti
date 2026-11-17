@@ -276,6 +276,25 @@ pub(all) enum CompareFunction {
   Always
 }
 
+#derive(@debug.Debug)
+pub(all) struct CompilationInfo {
+  messages : Array[CompilationMessage]
+}
+pub fn CompilationInfo::has_errors(Self) -> Bool
+pub fn CompilationInfo::new(messages? : Array[CompilationMessage]) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CompilationMessage {
+  message : String
+  kind : CompilationMessageType
+  line_num : Int32
+  line_pos : Int32
+  offset : Int32
+  length : Int32
+}
+pub fn CompilationMessage::is_error(Self) -> Bool
+pub fn CompilationMessage::new(message~ : String, kind~ : CompilationMessageType, line_num? : Int32, line_pos? : Int32, offset? : Int32, length? : Int32) -> Self
+
 #derive(Eq, @debug.Debug)
 pub(all) enum CompilationMessageType {
   Error
@@ -287,6 +306,7 @@ pub(all) enum CompilationMessageType {
 pub(all) enum ComputeCommand {
   SetPipeline(ComputePipelineId)
   SetBindGroup(SetBindGroup)
+  SetImmediates(SetImmediates)
   DispatchWorkgroups(DispatchArguments)
   DispatchWorkgroupsIndirect(DispatchIndirect)
   WriteTimestamp(WriteTimestamp)
@@ -339,6 +359,25 @@ pub(all) struct CopyBufferToTexture {
   destination : TexelCopyTextureInfo
   copy_size : Extent3d
 }
+
+#derive(@debug.Debug)
+pub(all) struct CopyExternalImageDestInfo {
+  texture : TextureId
+  mip_level : Int32
+  origin : Origin3d
+  aspect : TextureAspect
+  premultiplied_alpha : Bool
+  color_space : PredefinedColorSpace
+}
+pub fn CopyExternalImageDestInfo::new(texture~ : TextureId, mip_level? : Int32, origin? : Origin3d, aspect? : TextureAspect, premultiplied_alpha? : Bool, color_space? : PredefinedColorSpace) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct CopyExternalImageSourceInfo {
+  image : ExternalImage
+  origin : Origin3d
+  flip_y : Bool
+}
+pub fn CopyExternalImageSourceInfo::new(image~ : ExternalImage, origin? : Origin3d, flip_y? : Bool) -> Self
 
 #derive(@debug.Debug)
 pub(all) struct CopyTextureToBuffer {
@@ -504,6 +543,29 @@ pub fn Extent3d::is_empty(Self) -> Bool
 pub fn Extent3d::max_mip_level_count(Self) -> Int32
 pub fn Extent3d::new(width~ : Int32, height? : Int32, depth_or_array_layers? : Int32) -> Self
 pub fn Extent3d::physical_size(Self, mip_level~ : Int32, format~ : TextureFormat) -> Self
+
+#derive(@debug.Debug)
+pub(all) struct ExternalImage {
+  label : String
+  size : Extent3d
+  format : TextureFormat
+  data : Bytes
+}
+pub fn ExternalImage::new(size~ : Extent3d, format~ : TextureFormat, data~ : Bytes, label? : String) -> Self
+pub fn ExternalImage::row_bytes(Self) -> Int32
+
+#derive(@debug.Debug)
+pub(all) struct ExternalTextureDescriptor {
+  label : String
+  image : ExternalImage
+  color_space : PredefinedColorSpace
+}
+pub fn ExternalTextureDescriptor::new(image~ : ExternalImage, color_space? : PredefinedColorSpace, label? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct ExternalTextureId(UInt64)
+pub fn ExternalTextureId::from_raw(UInt64) -> Self
+pub fn ExternalTextureId::raw(Self) -> UInt64
 
 #derive(Eq, @debug.Debug)
 pub(all) enum FeatureName {
@@ -720,6 +782,13 @@ pub(all) enum PowerPreference {
   HighPerformance
 }
 
+#derive(Eq, @debug.Debug)
+pub(all) enum PredefinedColorSpace {
+  Srgb
+  DisplayP3
+}
+pub fn PredefinedColorSpace::name(Self) -> String
+
 #derive(@debug.Debug)
 pub(all) struct PrimitiveState {
   topology : PrimitiveTopology
@@ -768,6 +837,7 @@ pub(all) struct RenderBundle {
 pub(all) enum RenderCommand {
   SetPipeline(RenderPipelineId)
   SetBindGroup(SetBindGroup)
+  SetImmediates(SetImmediates)
   SetVertexBuffer(SetVertexBuffer)
   SetIndexBuffer(SetIndexBuffer)
   Draw(DrawArguments)
@@ -882,6 +952,13 @@ pub(all) struct SetBindGroup {
   group : BindGroupId
   dynamic_offsets : Array[Int32]
 }
+
+#derive(@debug.Debug)
+pub(all) struct SetImmediates {
+  range_offset : Int32
+  data : Bytes
+}
+pub fn SetImmediates::new(range_offset~ : Int32, data~ : Bytes) -> Self
 
 #derive(@debug.Debug)
 pub(all) struct SetIndexBuffer {

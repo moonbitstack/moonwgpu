@@ -284,6 +284,50 @@ pub(all) struct CopyTextureToTexture {
 }
 
 ///|
+/// `GPUCopyExternalImageSourceInfo`: the pixels to copy and where in them to
+/// start, with `flip_y` for a frame whose rows are bottom-first.
+#derive(Debug)
+pub(all) struct CopyExternalImageSourceInfo {
+  image : ExternalImage
+  origin : Origin3d
+  flip_y : Bool
+}
+
+///|
+pub fn CopyExternalImageSourceInfo::new(
+  image~ : ExternalImage,
+  origin~ : Origin3d = Origin3d::new(),
+  flip_y~ : Bool = false,
+) -> CopyExternalImageSourceInfo {
+  { image, origin, flip_y, }
+}
+
+///|
+/// `GPUCopyExternalImageDestInfo`: where the pixels land, whether their alpha
+/// is premultiplied on the way, and in which colour space.
+#derive(Debug)
+pub(all) struct CopyExternalImageDestInfo {
+  texture : TextureId
+  mip_level : Int32
+  origin : Origin3d
+  aspect : TextureAspect
+  premultiplied_alpha : Bool
+  color_space : PredefinedColorSpace
+}
+
+///|
+pub fn CopyExternalImageDestInfo::new(
+  texture~ : TextureId,
+  mip_level~ : Int32 = 0,
+  origin~ : Origin3d = Origin3d::new(),
+  aspect~ : TextureAspect = TextureAspect::All,
+  premultiplied_alpha~ : Bool = false,
+  color_space~ : PredefinedColorSpace = PredefinedColorSpace::Srgb,
+) -> CopyExternalImageDestInfo {
+  { texture, mip_level, origin, aspect, premultiplied_alpha, color_space, }
+}
+
+///|
 /// One `clear_buffer`.
 #derive(Debug)
 pub(all) struct ClearBuffer {
@@ -372,6 +416,7 @@ pub(all) struct RenderPassCommand {
 pub(all) enum RenderCommand {
   SetPipeline(RenderPipelineId)
   SetBindGroup(SetBindGroup)
+  SetImmediates(SetImmediates)
   SetVertexBuffer(SetVertexBuffer)
   SetIndexBuffer(SetIndexBuffer)
   Draw(DrawArguments)
@@ -398,6 +443,26 @@ pub(all) struct SetBindGroup {
   index : Int32
   group : BindGroupId
   dynamic_offsets : Array[Int32]
+}
+
+///|
+/// One `set_immediates`: bytes loaded into the immediate constants of one bind
+/// group slot, for the draw or dispatch that follows.
+///
+/// The bytes are already the run the caller named: `data_offset` and
+/// `data_size`, when given, have been applied.
+#derive(Debug)
+pub(all) struct SetImmediates {
+  range_offset : Int32
+  data : Bytes
+}
+
+///|
+pub fn SetImmediates::new(
+  range_offset~ : Int32,
+  data~ : Bytes,
+) -> SetImmediates {
+  { range_offset, data, }
 }
 
 ///|
@@ -465,6 +530,7 @@ pub(all) struct ComputePassCommand {
 pub(all) enum ComputeCommand {
   SetPipeline(ComputePipelineId)
   SetBindGroup(SetBindGroup)
+  SetImmediates(SetImmediates)
   DispatchWorkgroups(DispatchArguments)
   DispatchWorkgroupsIndirect(DispatchIndirect)
   WriteTimestamp(WriteTimestamp)

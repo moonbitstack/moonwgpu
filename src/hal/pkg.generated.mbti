@@ -37,12 +37,15 @@ pub(open) trait Hal {
   fn create_texture_view(Self, @types.TextureId, @types.TextureViewDescriptor) -> @types.TextureViewId raise HalError
   fn create_sampler(Self, @types.SamplerDescriptor) -> @types.SamplerId raise HalError
   fn create_shader_module(Self, @types.ShaderModuleDescriptor) -> @types.ShaderModuleId raise HalError
+  fn compilation_info(Self, @types.ShaderModuleId) -> Array[@types.CompilationMessage]
   fn create_bind_group_layout(Self, @types.BindGroupLayoutDescriptor) -> @types.BindGroupLayoutId raise HalError
   fn create_bind_group(Self, @types.BindGroupDescriptor) -> @types.BindGroupId raise HalError
   fn create_pipeline_layout(Self, @types.PipelineLayoutDescriptor) -> @types.PipelineLayoutId raise HalError
   fn create_render_pipeline(Self, @types.RenderPipelineDescriptor) -> @types.RenderPipelineId raise HalError
   fn create_compute_pipeline(Self, @types.ComputePipelineDescriptor) -> @types.ComputePipelineId raise HalError
   fn create_query_set(Self, @types.QuerySetDescriptor) -> @types.QuerySetId raise HalError
+  fn create_external_texture(Self, @types.ExternalTextureDescriptor) -> @types.ExternalTextureId raise HalError
+  fn destroy_external_texture(Self, @types.ExternalTextureId) -> Unit
   fn submit(Self, Array[@types.Command]) -> Unit raise HalError
   fn read_texture(Self, @types.TextureId, @types.Origin3d, @types.Extent3d, Int32) -> Bytes raise HalError
   fn write_texture(Self, @types.TextureId, @types.Origin3d, @types.Extent3d, Int32, Bytes) -> Unit raise HalError

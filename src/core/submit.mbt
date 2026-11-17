@@ -339,6 +339,22 @@ fn Hub::validate_render_pass(
         )
         self.touch_bind_group(scope, binding.group)
       }
+      SetImmediates(run) => {
+        require(
+          pipeline_set,
+          @types.InvalidPassState,
+          "setImmediates",
+          "a pipeline set before the immediates",
+          "no pipeline",
+        )
+        require_int(
+          run.data.length() > 0,
+          @types.InvalidCopyRange,
+          "setImmediates.data",
+          4,
+          run.data.length(),
+        )
+      }
       SetVertexBuffer(buffer) => {
         let state = self.buffer(buffer.buffer)
         require(
@@ -564,6 +580,22 @@ fn Hub::validate_compute_pass(
           binding.index,
         )
         self.touch_bind_group(scope, binding.group)
+      }
+      SetImmediates(run) => {
+        require(
+          pipeline_set,
+          @types.InvalidPassState,
+          "setImmediates",
+          "a pipeline set before the immediates",
+          "no pipeline",
+        )
+        require_int(
+          run.data.length() > 0,
+          @types.InvalidCopyRange,
+          "setImmediates.data",
+          4,
+          run.data.length(),
+        )
       }
       DispatchWorkgroups(arguments) => {
         require(

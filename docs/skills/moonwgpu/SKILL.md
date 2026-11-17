@@ -59,6 +59,45 @@ test {
 }
 ```
 
+## An external frame
+
+Where a browser imports a video element, a native host hands over the pixels it
+decoded: the size, the format and the bytes, packed row by row. Importing copies
+them, so the host may reuse its buffer immediately, and the texture lasts until
+the host says the frame is gone.
+
+```moonbit check
+test {
+  let backend = @memory.Backend::new()
+  let device = @moonwgpu.Instance::new(backend~).request_adapter().request_device()
+  let image = @types.ExternalImage::new(
+    size=@types.Extent3d::new(width=1, height=1),
+    format=@types.TextureFormat::Rgba8unorm,
+    data=b"\xff\x00\x00\xff",
+  )
+  let frame = device.import_external_texture(
+    descriptor=@types.ExternalTextureDescriptor::new(image~),
+  )
+  let target = device.create_texture(
+    descriptor=@types.TextureDescriptor::new(
+      size=@types.Extent3d::new(width=1, height=1),
+      format=@types.TextureFormat::Rgba8unorm,
+      usage=@types.TextureUsages::copy_dst(),
+    ),
+  )
+  device.queue().copy_external_image_to_texture(
+    source=@types.CopyExternalImageSourceInfo::new(image~, flip_y=true),
+    destination=@types.CopyExternalImageDestInfo::new(
+      texture=target.id(),
+      premultiplied_alpha=true,
+    ),
+    copy_size=@types.Extent3d::new(width=1, height=1),
+  )
+  frame.expire()
+  assert_true(frame.is_expired())
+}
+```
+
 ## Recording a pass
 
 A pass records; the queue validates and submits. A draw needs a pipeline set
@@ -126,3 +165,14 @@ test {
 - **Features gate formats and queries.** `rg11b10ufloat`, the compressed
   formats and timestamp queries need their feature enabled on the device, and
   the errors say which one is missing.
+- **Immediates are recorded, not bound.** `set_immediates` loads a word-aligned
+  run of bytes for the pipeline that was set before it; the range and the run
+  are both counted in four-byte words.
+- **Compilation info comes from the backend.** `get_compilation_info` reports
+  what the host's shader compiler said, and the memory backend has none, so it
+  reports no message — a module there is only as checked as its caller.
+- **An external frame has a lifetime.** `import_external_texture` copies the
+  pixels at import; `expire` is how a host says the frame has been replaced.
+- **Errors no scope collects are kept.** A device hands them to
+  `set_uncapturederror_handler`, or keeps them for `uncaptured_errors` when no
+  handler is set.
