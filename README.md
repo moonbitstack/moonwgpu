@@ -212,6 +212,37 @@ test {
 | `ExternalTexture` | A decoded frame a host handed over, bindable until it expires |
 | `CanvasContext` | A surface a host provides, configured with a device and a format |
 
+## The specification
+
+Three documents describe what this library is supposed to be, and this repository
+names all three rather than paraphrasing them:
+
+| Document | What it is | What it decides here |
+|:--|:--|:--|
+| [WebGPU](https://www.w3.org/TR/webgpu/) | the W3C text, on the Recommendation track | the normative one: every validation rule in `core` follows a step in it, and a rule that exists here and there is implemented as written there |
+| [WebGPU draft](https://gpuweb.github.io/gpuweb/) | the editor's living copy, newer than the TR | the features the TR does not have yet, which is why `textureBindingViewDimension`, view `usage`, swizzles, immediates and external frames are all present here; a conflict resolves to the TR, an addition to the draft |
+| [WGSL](https://www.w3.org/TR/WGSL/) | the shading language | not here: parsing and executing WGSL belong to [moonnaga](https://github.com/moonbitstack/moonnaga), and this library keeps only the seam a compiled module arrives through |
+
+The draft is checked out as a submodule at `spec/`, pinned to
+`gpuweb/gpuweb@d178d91` — the revision whose paragraphs the rules were
+transcribed from — so a comment like "the row pitch is a multiple of 256" can be
+traced to the sentence that says so:
+
+```bash
+git submodule update --init --depth 1 spec     # about 4 MB, working tree only
+```
+
+The source is Bikeshed: `spec/spec/index.bs` is what the WebGPU HTML is built
+from and `spec/wgsl/index.bs` the WGSL one, with the generated IDL under
+`spec/spec/sections`. Update the pin deliberately — a new revision may add a
+rule that the validators have not learned yet.
+
+The reference implementations are read, not vendored: [wgpu](https://github.com/gfx-rs/wgpu)
+for the layering this library follows (`types` below the API, `hal` below that)
+and [Dawn](https://dawn.googlesource.com/dawn) for what a conformance run
+actually asserts. Local checkouts of either belong in `.ref/`, which git
+ignores.
+
 ## What runs today
 
 The memory backend executes every command that moves bytes — the four copies,

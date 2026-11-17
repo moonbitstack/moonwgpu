@@ -191,3 +191,7 @@ test {
 - **Errors no scope collects are kept.** A device hands them to
   `set_uncapturederror_handler`, or keeps them for `uncaptured_errors` when no
   handler is set.
+- **The rules come from a document in the tree.** `spec/` is the editor's
+  draft, pinned to one revision; the W3C text at
+  <https://www.w3.org/TR/webgpu/> is what a rule is implemented against, and the
+  draft only adds to it.
