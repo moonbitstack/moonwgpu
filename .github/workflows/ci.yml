@@ -62,6 +62,33 @@ jobs:
         run: |
           moon info --target all && git diff --exit-code
 
+  conformance:
+    permissions:
+      contents: read
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # The two pinned references: the specification the rules come from, and
+      # the suite whose shape conformance/ follows. The suite itself is not run
+      # here - it drives navigator.gpu from TypeScript - so what is checked is
+      # the index it produced and the ledger that points into this repository.
+      - name: the pinned references
+        run: |
+          git submodule update --init --depth 1 spec cts
+          git -C cts sparse-checkout set --cone src/webgpu
+
+      - name: the case index is current
+        run: python3 scripts/cts_index.py --check
+
+      - name: every claim resolves
+        run: python3 scripts/cts_check.py
+
+      - name: the tables match the specification
+        run: python3 scripts/spec_drift.py
+
   docs:
     permissions:
       contents: read

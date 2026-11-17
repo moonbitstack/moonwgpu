@@ -1,0 +1,61 @@
+name: Refresh the pinned references
+
+# The specification and the conformance suite both move without us. Twice a
+# month the pins are moved to upstream head, the derived files are regenerated,
+# and whatever changed arrives as a pull request instead of as a surprise.
+#
+# The checks run after the request is opened on purpose: a rename upstream can
+# break the ledger, and the pin bump is worth seeing even then.
+
+on:
+  schedule:
+    - cron: "17 3 1,15 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: clone the references, narrowly
+        run: |
+          git submodule update --init --depth 1 spec cts
+          git -C cts sparse-checkout set --cone src/webgpu
+
+      - name: move the pins to upstream head
+        run: |
+          git submodule update --remote --depth 1 spec
+          git submodule update --remote --depth 1 cts
+
+      - name: regenerate the case index
+        run: python3 scripts/cts_index.py
+
+      - name: open a pull request if anything moved
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet; then
+            echo "nothing moved; the pins are already at upstream head"
+            exit 0
+          fi
+          branch="refresh/pins-$(date -u +%Y-%m-%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add -A
+          git commit -s -m "chore(refs): move the pinned references to upstream head."
+          git push origin "$branch"
+          gh pr create --base master --head "$branch" \
+            --title "Refresh the pinned references" \
+            --body "Automated: the spec and the conformance suite moved to upstream head, and \`conformance/cts-cases.txt\` was regenerated. Read the diff to \`conformance/claims.json\` before merging: a case rename upstream shows up as a ledger failure in the checks below."
+
+      - name: the ledger still resolves
+        run: python3 scripts/cts_check.py
+
+      - name: the tables still match the specification
+        run: python3 scripts/spec_drift.py

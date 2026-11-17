@@ -246,6 +246,18 @@ and [Dawn](https://dawn.googlesource.com/dawn) for what a conformance run
 actually asserts. Local checkouts of either belong in `.ref/`, which git
 ignores.
 
+The conformance suite is imported the same way. It is TypeScript driving
+`navigator.gpu`, so it cannot run against a library that has neither a browser
+nor a GPU underneath it — but its shape can: `conformance/` holds a generated
+index of every case the suite declares and a ledger of the rules this library
+mirrors, file by file, with the tests that assert them. Both directions are
+checked, so a case renamed upstream and a claim whose test disappeared are both
+build failures. See [conformance/README.md](conformance/README.md).
+
+Both pins move on the first and the fifteenth of the month:
+`.github/workflows/refresh.yml` walks `spec` and `cts` to upstream head,
+regenerates the index, and opens a pull request with whatever moved.
+
 ## What runs today
 
 The memory backend executes every command that moves bytes — the four copies,

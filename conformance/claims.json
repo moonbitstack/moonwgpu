@@ -1,0 +1,211 @@
+{
+  "suite": "gpuweb/cts",
+  "columns": {
+    "cts": "a file in the conformance suite, as indexed in conformance/cts-cases.txt",
+    "status": "mirrored | partial | not-applicable",
+    "tests": "test names in this repository that exercise the same rule"
+  },
+  "claims": [
+    {
+      "cts": "src/webgpu/api/validation/buffer/create.spec.ts",
+      "status": "mirrored",
+      "tests": [
+        "an empty usage set is refused",
+        "a buffer with one usage bit is accepted",
+        "map read may only be combined with copy destination",
+        "map write may only be combined with copy source",
+        "a size above maxBufferSize is refused",
+        "a negative size is refused"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/buffer/destroy.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a destroyed buffer cannot be used again",
+        "a destroyed buffer refuses a second write"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/buffer/mapping.spec.ts",
+      "status": "partial",
+      "tests": [
+        "mapping reads the bytes a queue write put there",
+        "a range that is not mapped cannot be read",
+        "mapping a buffer that lacks MAP_READ is refused",
+        "a buffer reports whether it is mapped",
+        "a mapped buffer has to be a whole number of four byte words",
+        "a write outside a buffer is refused"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/image_copy/buffer_texture_copies.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a buffer to texture copy needs a 256 byte row stride",
+        "a row stride narrower than a row of texels is refused",
+        "a multi row copy needs a row stride at all",
+        "a copy region stays inside the mip level",
+        "a copy into a texture without copy destination is refused"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/encoding/cmds/copyBufferToBuffer.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a buffer to buffer copy needs four byte alignment on both sides",
+        "a buffer to buffer copy stays inside both buffers",
+        "a copy needs the usage that names its direction"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/encoding/cmds/copyTextureToTexture.spec.ts",
+      "status": "partial",
+      "tests": ["a texture to texture copy needs both directions and one format"]
+    },
+    {
+      "cts": "src/webgpu/api/validation/queue/writeBuffer.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a write into a buffer without copy destination is refused",
+        "a write outside a buffer is refused"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/queue/submit.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a submit that breaks a rule moves nothing",
+        "a dispatch without a pipeline is refused at submit",
+        "a draw without a pipeline is refused at submit"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/error_scope.spec.ts",
+      "status": "partial",
+      "tests": [
+        "an error scope collects nothing when nothing went wrong",
+        "popping an error scope that was never pushed is refused"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/render_pipeline/vertex_state.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a well formed vertex layout is accepted",
+        "an array stride has to be a multiple of four",
+        "an attribute has to fit inside the stride",
+        "an attribute offset aligns to its own size, up to four",
+        "two attributes cannot claim the same shader location",
+        "more vertex buffers than the limit is refused"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/render_pipeline/fragment_state.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a colour target has to be a renderable format",
+        "blending needs a blendable format",
+        "the colour attachments of one sample stay within their byte budget"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/render_pipeline/primitive_state.spec.ts",
+      "status": "partial",
+      "tests": ["a strip topology needs a strip index format and a list must not have one"]
+    },
+    {
+      "cts": "src/webgpu/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a bind group would need every binding the layout declares",
+        "a pipeline asks for a layout index it has no entry for"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/validation/min_buffer_binding_size.spec.ts",
+      "status": "partial",
+      "tests": ["a buffer binding has to be aligned to the offset alignment"]
+    },
+    {
+      "cts": "src/webgpu/api/validation/query_set/create.spec.ts",
+      "status": "partial",
+      "tests": ["a timestamp query set needs its feature"]
+    },
+    {
+      "cts": "src/webgpu/api/validation/texture/bgra8unorm_storage.spec.ts",
+      "status": "partial",
+      "tests": ["a storage binding has to be a storage format"]
+    },
+    {
+      "cts": "src/webgpu/api/validation/texture/rg11b10ufloat_renderable.spec.ts",
+      "status": "partial",
+      "tests": ["a render attachment has to be a renderable format"]
+    },
+    {
+      "cts": "src/webgpu/api/validation/capability_checks/features/texture_formats.spec.ts",
+      "status": "partial",
+      "tests": ["a compressed format needs its feature"]
+    },
+    {
+      "cts": "src/webgpu/api/operation/texture_view/format_reinterpretation.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a view of one aspect takes that aspect's format",
+        "a view cannot reach past the last mip level",
+        "a view cannot reach past the last array layer",
+        "a cube view covers six square layers"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/operation/queue/writeBuffer.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a buffer round trips through the queue",
+        "a command buffer that copies through the queue moves the bytes",
+        "a copy through the queue moves bytes where the command says"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/operation/command_buffer/render/render_bundle.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a bundle replays the draw it recorded",
+        "a bundle encoder refuses to record after finishing"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/operation/command_buffer/programmable/state_tracking.spec.ts",
+      "status": "partial",
+      "tests": [
+        "reading a buffer twice in one pass is fine",
+        "writing a buffer then reading it in one pass is refused",
+        "reading a buffer then writing it in one pass is refused",
+        "a storage texture cannot be read in the same pass",
+        "a render attachment cannot be sampled in the same pass",
+        "a buffer bound to a pass and copied in the same pass is refused"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/operation/command_buffer/queries/occlusionQuery.spec.ts",
+      "status": "partial",
+      "tests": [
+        "an occlusion query set resolves into a query resolve buffer",
+        "resolving past the last query is refused"
+      ]
+    },
+    {
+      "cts": "src/webgpu/api/operation/sampling/sampler_texture.spec.ts",
+      "status": "partial",
+      "tests": ["the sampler rules", "a sampler says whether it filters and compares"]
+    },
+    {
+      "cts": "src/webgpu/api/validation/queue/copyToTexture/CopyExternalImageToTexture.spec.ts",
+      "status": "partial",
+      "tests": [
+        "a texture write lands on the texels the copy names",
+        "a texture write needs enough bytes for its rows"
+      ]
+    }
+  ]
+}

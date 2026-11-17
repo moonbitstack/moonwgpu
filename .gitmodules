@@ -2,3 +2,7 @@
 	path = spec
 	url = https://github.com/gpuweb/gpuweb.git
 	shallow = true
+[submodule "cts"]
+	path = cts
+	url = https://github.com/gpuweb/cts.git
+	shallow = true
