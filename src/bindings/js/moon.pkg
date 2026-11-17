@@ -1,0 +1,19 @@
+// A host that a JavaScript program drives, built for the `js` backend only:
+// the other backends have no way to call into JavaScript, so on them this
+// package is empty.
+pkgtype(kind: "executable")
+
+#cfg(target="js")
+import {
+  "moonbitstack/moonwgpu",
+  "moonbitstack/moonwgpu/types",
+  "moonbitstack/moonwgpu/core",
+  "moonbitstack/moonwgpu/hal/memory",
+}
+
+options(
+  targets: {
+    "host.mbt": [ "js" ],
+    "offtarget.mbt": [ "native", "wasm", "wasm-gc" ],
+  },
+)

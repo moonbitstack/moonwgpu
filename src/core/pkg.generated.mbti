@@ -160,6 +160,7 @@ pub fn Hub::pop_error_scope(Self) -> Array[Refused] raise Refused
 pub fn Hub::push_error_scope(Self, @types.ErrorFilter) -> Unit
 pub fn Hub::read_buffer(Self, @types.BufferId, Int32, Int32) -> Bytes raise Refused
 pub fn Hub::render_pipeline_layout(Self, @types.RenderPipelineId) -> @types.PipelineLayoutId? raise Refused
+pub fn Hub::report(Self, Refused) -> Refused
 pub fn Hub::set_handler(Self, ((Refused) -> Unit)?) -> Unit
 pub fn Hub::submit(Self, Array[@types.Command]) -> Unit raise Refused
 pub fn Hub::texture(Self, @types.TextureId) -> TextureState raise Refused

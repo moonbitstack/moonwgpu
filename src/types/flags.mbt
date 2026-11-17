@@ -90,6 +90,15 @@ pub fn BufferUsages::bits(self : BufferUsages) -> UInt32 {
 }
 
 ///|
+/// A usage set from its bits, for a host that speaks the specification's
+/// numbers rather than this library's constructors - a JavaScript binding, for
+/// one. Bits the specification does not define are kept as they arrived, so
+/// that the validator refuses them by name.
+pub fn BufferUsages::from_bits(bits : UInt32) -> BufferUsages {
+  BufferUsages(bits)
+}
+
+///|
 /// Whether every bit of `other` is set here.
 pub fn BufferUsages::contains(
   self : BufferUsages,
@@ -170,6 +179,12 @@ pub fn TextureUsages::all() -> TextureUsages {
 ///|
 pub fn TextureUsages::bits(self : TextureUsages) -> UInt32 {
   self.0
+}
+
+///|
+/// A usage set from its bits, the counterpart of `BufferUsages::from_bits`.
+pub fn TextureUsages::from_bits(bits : UInt32) -> TextureUsages {
+  TextureUsages(bits)
 }
 
 ///|
@@ -361,6 +376,13 @@ pub fn MapMode::write() -> MapMode {
 ///|
 pub fn MapMode::bits(self : MapMode) -> UInt32 {
   self.0
+}
+
+///|
+/// A mapping mode from the specification's bits: `0x0001` read, `0x0002`
+/// write.
+pub fn MapMode::from_bits(bits : UInt32) -> MapMode {
+  MapMode(bits)
 }
 
 ///|

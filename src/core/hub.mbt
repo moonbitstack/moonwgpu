@@ -69,7 +69,12 @@ pub fn Hub::pop_error_scope(self : Hub) -> Array[Refused] raise Refused {
 ///|
 /// Record an error in the innermost scope that accepts its filter; an error no
 /// scope asked for is the device's own and is kept for `uncapturederror`.
-fn Hub::report(self : Hub, error : Refused) -> Refused {
+///
+/// A caller in MoonBit gets a refusal where it was raised, so this is only
+/// called where the specification's error model has to be honoured instead:
+/// by the device for an error a host reported, and by a binding that has to
+/// turn a raised refusal into one `popErrorScope` can return.
+pub fn Hub::report(self : Hub, error : Refused) -> Refused {
   let mut captured = false
   if !self.scopes.is_empty() {
     let scope = self.scopes[self.scopes.length() - 1]

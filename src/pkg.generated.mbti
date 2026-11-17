@@ -176,6 +176,7 @@ pub fn Device::lost_info(Self) -> @types.DeviceLostInfo?
 pub fn Device::pop_error_scope(Self) -> Array[@core.Refused] raise @core.Refused
 pub fn Device::push_error_scope(Self, filter? : @types.ErrorFilter) -> Unit
 pub fn Device::queue(Self) -> Queue
+pub fn Device::report_error(Self, @core.Refused) -> @core.Refused
 pub fn Device::set_uncapturederror_handler(Self, ((@core.Refused) -> Unit)?) -> Unit
 pub fn Device::uncaptured_errors(Self) -> Array[@core.Refused]
 pub fn Device::uncapturederror_handler(Self) -> ((@core.Refused) -> Unit)?

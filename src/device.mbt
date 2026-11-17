@@ -116,6 +116,24 @@ pub fn Device::clear_uncaptured_errors(self : Device) -> Unit {
 }
 
 ///|
+/// Hand a refusal to the device's error scopes.
+///
+/// The two error models this library serves are not the same one. A MoonBit
+/// caller gets its refusals raised, at the call that made them, and never has
+/// to ask. A caller written against the specification never sees a raise: the
+/// failing call returns an invalid object and the error arrives later, from
+/// `pop_error_scope`. This is the bridge - it records an error in the innermost
+/// scope whose filter accepts it, or among the device's uncaptured errors when
+/// no scope is open - and hands the error back so that a host can both record
+/// it and report it.
+pub fn Device::report_error(
+  self : Device,
+  error : @core.Refused,
+) -> @core.Refused {
+  self.hub.report(error)
+}
+
+///|
 /// Push an error scope: the errors the device itself generates while it is on
 /// top are collected for `pop_error_scope` instead of being lost.
 /// https://www.w3.org/TR/webgpu/#dom-gpudevice-pusherrorscope

@@ -172,6 +172,7 @@ pub fn BufferUsages::bits(Self) -> UInt32
 pub fn BufferUsages::contains(Self, Self) -> Bool
 pub fn BufferUsages::copy_dst() -> Self
 pub fn BufferUsages::copy_src() -> Self
+pub fn BufferUsages::from_bits(UInt32) -> Self
 pub fn BufferUsages::index() -> Self
 pub fn BufferUsages::indirect() -> Self
 pub fn BufferUsages::intersects(Self, Self) -> Bool
@@ -739,6 +740,7 @@ pub(all) enum LoadOp {
 pub struct MapMode(UInt32)
 pub fn MapMode::bits(Self) -> UInt32
 pub fn MapMode::contains(Self, Self) -> Bool
+pub fn MapMode::from_bits(UInt32) -> Self
 pub fn MapMode::is_empty(Self) -> Bool
 pub fn MapMode::none() -> Self
 pub fn MapMode::read() -> Self
@@ -1325,6 +1327,7 @@ pub fn TextureUsages::bits(Self) -> UInt32
 pub fn TextureUsages::contains(Self, Self) -> Bool
 pub fn TextureUsages::copy_dst() -> Self
 pub fn TextureUsages::copy_src() -> Self
+pub fn TextureUsages::from_bits(UInt32) -> Self
 pub fn TextureUsages::intersects(Self, Self) -> Bool
 pub fn TextureUsages::is_empty(Self) -> Bool
 pub fn TextureUsages::none() -> Self
