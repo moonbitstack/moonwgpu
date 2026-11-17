@@ -195,3 +195,12 @@ test {
   draft, pinned to one revision; the W3C text at
   <https://www.w3.org/TR/webgpu/> is what a rule is implemented against, and the
   draft only adds to it.
+- **One library, four backends.** The suite passes on `wasm`, `wasm-gc`, `js`
+  and `native`; `conformance/targets.json` records the count for each, and
+  `scripts/targets.py --check` fails when a backend loses one.
+- **The `js` backend can be driven from JavaScript.** `src/bindings/js` is built
+  for `--target js` and publishes `ask`/`text`/`take` on `globalThis`;
+  `conformance/js/webgpu.mjs` wraps them in `navigator.gpu`, promises and
+  `GPUValidationError`. What a refusal looks like there is
+  `Device::report_error`: the raise a MoonBit caller sees becomes the error a
+  `popErrorScope` returns.

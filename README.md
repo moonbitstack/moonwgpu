@@ -247,12 +247,14 @@ actually asserts. Local checkouts of either belong in `.ref/`, which git
 ignores.
 
 The conformance suite is imported the same way. It is TypeScript driving
-`navigator.gpu`, so it cannot run against a library that has neither a browser
-nor a GPU underneath it — but its shape can: `conformance/` holds a generated
+`navigator.gpu`, so the part of it that can run against this library is the part
+that asks questions rather than draws pictures: `conformance/` holds a generated
 index of every case the suite declares and a ledger of the rules this library
 mirrors, file by file, with the tests that assert them. Both directions are
 checked, so a case renamed upstream and a claim whose test disappeared are both
-build failures. See [conformance/README.md](conformance/README.md).
+build failures. The `js` backend can be driven from JavaScript as well, through
+a small WebGPU-shaped facade — see [Backends](#backends). Details in
+[conformance/README.md](conformance/README.md).
 
 Both pins move on the first and the fifteenth of the month:
 `.github/workflows/refresh.yml` walks `spec` and `cts` to upstream head,
@@ -281,14 +283,59 @@ keeps the seam (`hal`'s contract) rather than pretending.
 | Limits, features and their dependencies | the specification's full tables |
 | Texture and vertex format tables | every format the specification defines |
 | Canvases (`CanvasContext`, `configure`, `getCurrentTexture`) | a frame is an ordinary texture over the host's `Surface` |
+| The same suite on `wasm`, `wasm-gc`, `js` and `native` | 182 tests on each, recorded in `conformance/targets.json` |
+| Driving the `js` backend from JavaScript | `src/bindings/js` plus a WebGPU-shaped facade in `conformance/js` |
 | Executing a shader | needs a WGSL front end, which is its own library (`moonnaga`) |
 | Vulkan, Metal, D3D12, GLES and browser backends | packaged and named; each refuses with its reason until its stub exists, and `hal` is where that stub lands |
 
-## Install and targets
+## Backends
 
-All four targets build and test: `wasm`, `wasm-gc`, `js`, `native`. Nothing is
-native-only, and nothing is a stub: a backend that cannot do something says so
-through `HalError` instead of returning a value that looks like success.
+One source tree, four backends, one suite. `conformance/targets.json` is the
+record of what each backend actually ran, and `scripts/targets.py --check`
+keeps it honest in CI:
+
+```bash
+python3 scripts/targets.py           # run the suite on all four, write the file
+python3 scripts/targets.py --check   # fail if a backend lost a test
+```
+
+| Backend | How the suite runs there | What can call into it |
+|:--|:--|:--|
+| `native` | `moon test --target native`, in the caller's thread over the memory backend | MoonBit |
+| `wasm` | `moon test --target wasm`, under a wasm runtime | MoonBit |
+| `wasm-gc` | `moon test --target wasm-gc`, likewise | MoonBit |
+| `js` | `moon test --target js`, and from JavaScript: `src/bindings/js` | JavaScript |
+
+The last row is the one a conformance suite needs. `src/bindings/js` is built
+for `--target js` only and publishes three functions on `globalThis` —
+`ask(op, …) -> Int`, `text(op, …) -> String`, `take(op, …) -> Bytes` — and
+`conformance/js/webgpu.mjs` wraps them in the objects, promises and error
+classes the specification defines:
+
+```bash
+moon build --target js
+node conformance/js/run.mjs    # a dozen cases, in the shape the suite writes them
+```
+
+What that buys is the error model a suite is written against: a call that the
+library refuses returns an invalid object, and the error arrives later from
+`popErrorScope`. The bridge is `Device::report_error`, which records a raised
+refusal in the innermost scope that accepts its filter.
+
+What it does not buy, and no facade could: a case that compares pixels needs a
+rasterizer, and a case that runs a shader needs a WGSL compiler. The memory
+backend moves bytes and keeps no framebuffer; `moonnaga` is the shader
+question. Encoding also stays on the MoonBit side for now — the facade creates,
+writes, maps and destroys, and hands `submit` only the empty array it can prove.
+
+The other two backends cannot be called from JavaScript at all, and that is a
+property of the toolchain rather than of this library: a `wasm` or `wasm-gc`
+artifact exports `_start` and nothing else — no functions, no memory — and
+neither backend accepts `extern "js"`, so a host has no way in. What they can be
+driven by is the suite itself running inside them, which is what the ledger
+above asserts; `native` is in the same position from JavaScript's side, since it
+has no stable ABI to reach through.
+
 
 ## Licence
 

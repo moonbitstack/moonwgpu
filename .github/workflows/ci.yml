@@ -89,6 +89,38 @@ jobs:
       - name: the tables match the specification
         run: python3 scripts/spec_drift.py
 
+  backends:
+    permissions:
+      contents: read
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install moonbit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: post install
+        run: |
+          moon version --all
+          moon update
+
+      # One source tree and four backends. `moon check` says a backend builds,
+      # which is not the same claim as "the same tests pass there"; this is the
+      # second claim, and conformance/targets.json is where it is recorded.
+      - name: every backend runs the same suite
+        run: python3 scripts/targets.py --check
+
+      # And one of those backends can be driven from JavaScript, which is the
+      # only shape a suite written for navigator.gpu can have here.
+      - name: a JavaScript host drives the js backend
+        run: |
+          moon build --target js
+          node conformance/js/run.mjs
+
   docs:
     permissions:
       contents: read

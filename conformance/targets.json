@@ -1,0 +1,33 @@
+{
+  "toolchain": "moon 0.1.20261104 (940aa18 2026-11-04)",
+  "backends": [
+    {
+      "backend": "wasm",
+      "total": 182,
+      "passed": 182,
+      "failed": 0,
+      "exit": 0
+    },
+    {
+      "backend": "wasm-gc",
+      "total": 182,
+      "passed": 182,
+      "failed": 0,
+      "exit": 0
+    },
+    {
+      "backend": "js",
+      "total": 182,
+      "passed": 182,
+      "failed": 0,
+      "exit": 0
+    },
+    {
+      "backend": "native",
+      "total": 182,
+      "passed": 182,
+      "failed": 0,
+      "exit": 0
+    }
+  ]
+}
