@@ -373,10 +373,10 @@ fn Host::take(self : Host, op : Int32, a : Int32) -> Bytes {
       self.buffer(a).get_mapped_range() catch {
         error => {
           self.last_error = error.message()
-          Bytes::new(0)
+          b""
         }
       }
-    _ => Bytes::new(0)
+    _ => b""
   }
 }
 

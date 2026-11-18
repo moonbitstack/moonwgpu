@@ -14,7 +14,7 @@ pub suberror Refused {
     kind~ : @types.ErrorKind,
     at~ : String,
     want~ : String,
-    got~ : String
+    got~ : String,
   )
   OutOfMemory(at~ : String, limit~ : Int32, want~ : Int32)
   DeviceLost(reason~ : @types.DeviceLostReason)
