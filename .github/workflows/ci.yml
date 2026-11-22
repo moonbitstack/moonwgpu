@@ -125,6 +125,55 @@ jobs:
           moon build --target js
           node conformance/js/run.mjs
 
+
+  # The one job that runs on a device. Mesa's lavapipe is a Vulkan
+  # implementation in software, so the four ways bytes move are checked here
+  # with nothing but a CPU: a clear, a triangle against its own coverage, a
+  # compute dispatch read back word by word, and an upload that comes back
+  # unchanged.
+  vulkan:
+    permissions:
+      contents: read
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install the software driver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libvulkan-dev mesa-vulkan-drivers vulkan-tools glslang-tools
+
+      - name: install moonbit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: post install
+        run: |
+          moon version --all
+          moon update
+
+      - name: a device is present
+        run: vulkaninfo --summary
+
+      # The modules in `src/shaders` are what these sources compile to; a
+      # source that changed without the words is a stale shader.
+      - name: the shaders match their sources
+        run: |
+          python3 scripts/build_shaders.py
+          git diff --exit-code src/shaders
+
+      - name: the device renders, dispatches and reads back
+        env:
+          MOONWGPU_VULKAN_LIVE: "1"
+        run: moon test --target native
+
+      - name: the example runs on the device
+        run: moon run src/examples/05-device --target native
+
   docs:
     permissions:
       contents: read
