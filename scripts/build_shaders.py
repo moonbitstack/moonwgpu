@@ -79,7 +79,7 @@ def main() -> int:
             if len(words) % 4 != 0:
                 print("%s did not produce whole words" % name, file=sys.stderr)
                 return 1
-            body.append("///|\n/// The module `%s` compiles to.\n" % name)
+            body.append("///|\n/// The module `%s` compiles to." % name)
             body.append('pub let %s : Bytes = b"%s"\n' % (symbol, escape(words)))
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text("\n".join(body), encoding="utf-8", newline="\n")
