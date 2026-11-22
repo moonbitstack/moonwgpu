@@ -11,5 +11,12 @@ import {
 import {
   "moonbitstack/moonwgpu/hal/memory",
   "moonbitstack/moonwgpu/hal/vulkan",
+  "moonbitstack/moonwgpu/hal/metal",
+  "moonbitstack/moonwgpu/shaders",
   "moonbitstack/moonwgpu/web",
+} for "wbtest"
+
+#cfg(target="native")
+import {
+  "moonbitlang/core/env",
 } for "wbtest"
