@@ -283,10 +283,59 @@ keeps the seam (`hal`'s contract) rather than pretending.
 | Limits, features and their dependencies | the specification's full tables |
 | Texture and vertex format tables | every format the specification defines |
 | Canvases (`CanvasContext`, `configure`, `getCurrentTexture`) | a frame is an ordinary texture over the host's `Surface` |
-| The same suite on `wasm`, `wasm-gc`, `js` and `native` | 182 tests on each, recorded in `conformance/targets.json` |
+| The same suite on `wasm`, `wasm-gc`, `js` and `native` | 187 tests on each, recorded in `conformance/targets.json` |
 | Driving the `js` backend from JavaScript | `src/bindings/js` plus a WebGPU-shaped facade in `conformance/js` |
-| Executing a shader | needs a WGSL front end, which is its own library (`moonnaga`) |
-| Vulkan, Metal, D3D12, GLES and browser backends | packaged and named; each refuses with its reason until its stub exists, and `hal` is where that stub lands |
+| Executing a shader | needs a WGSL front end, which is its own library (`moonnaga`); a module that arrives as SPIR-V runs today |
+| Vulkan | real: instance, device, buffers, textures, pipelines, descriptor sets, dynamic render passes, compute, read-back |
+| Metal, D3D12 and GLES | packaged and named; each refuses with its reason until its stub exists |
+## Vulkan
+
+`hal/vulkan` is the first backend that runs on a device. It is a MoonBit
+implementation of the same contract the memory backend implements, with one C
+file underneath it: `src/hal/vulkan/stub.c` is the only place a Vulkan call is
+made, it opens the loader at run time, and it links against nothing. Where the
+Vulkan headers are absent the file still compiles, and the backend reports that
+the loader cannot be reached instead of failing to build.
+
+```bash
+moon run src/examples/05-device --target native
+```
+
+```
+device:  llvmpipe (LLVM 21.1.8, 256 bits)
+clear:   4x4 read back as 51,102,153,255
+triangle: 512 of 4096 pixels in the triangle's colour
+compute: 1024 of 1024 words read back as 2n+1
+```
+
+To build it you need the Vulkan development headers and a driver: on Debian and
+Ubuntu, `libvulkan-dev` and `mesa-vulkan-drivers`. The loader is opened with
+`dlopen`/`LoadLibrary`, so nothing is linked at build time and no SDK is needed
+to check the package.
+
+| Piece | How it is here |
+|:--|:--|
+| Instance, device, queue | one `VkInstance` and one `VkDevice` per backend, the first device the loader reports |
+| Buffers | host-visible and coherent, mapped once at creation |
+| Textures, views, samplers | `VK_IMAGE_TILING_OPTIMAL`, with the usage bits the descriptor asks for |
+| Pipelines | built for dynamic rendering (`VkPipelineRenderingCreateInfo`), so a pass is a `vkCmdBeginRendering` and the pipeline needs no render pass object |
+| Bind groups | one descriptor set per group, at the set index the bind names |
+| Subresource layouts | tracked by the backend, one per mip level, and every use is a barrier from what it was to what it now is |
+| Read-back | a staging buffer and a copy on the same queue, for `read_texture`, `write_texture` and the examples |
+| Immediates | Vulkan push constants, in one 128-byte range on every pipeline layout |
+| Shaders | SPIR-V, which is what `ShaderModuleDescriptor::spirv` takes; a WGSL module is created with an error a caller can read, and a pipeline built on it refuses |
+
+The shaders the examples and the tests use are compiled from the GLSL in
+`scripts/shaders` by `scripts/build_shaders.py`, which writes the words into
+`src/shaders/modules.mbt`. That is where the wrapper's shader compiler will plug
+in: the same words, from WGSL instead of GLSL.
+
+Two things this backend does not do yet. A draw that samples a texture reads
+zero on the software driver it was developed against, although the image holds
+its texels and the descriptor is bound; the four ways bytes move — clear,
+vertex, compute, transfer — are exact, and the sampling path is the open one. A
+surface needs a window system, so `Surface` is still the windowing layer's job
+and a native canvas arrives with it.
 
 ## Backends
 

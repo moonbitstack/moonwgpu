@@ -162,11 +162,15 @@ test {
 - **A canvas is a surface plus a context.** `CanvasContext::new(surface~)` takes
   a `@hal.Surface` a host implements over its window; `configure` binds a device
   and a format, `get_current_texture` returns an ordinary `Texture`.
-- **A backend that is not bound refuses once.** `hal/vulkan`, `hal/metal`,
-  `hal/dx12`, `hal/gles` and `web` are packages with a name and a reason; their
-  `open()` hands back a backend whose every call raises `Internal` with that
-  reason, so code written for them compiles and fails where the driver would
-  have answered.
+- **One backend runs on a device.** `@vulkan.open()` returns a backend with an
+  `available()`, and where a loader and a driver are present it renders,
+  dispatches and reads back; `hal/metal`, `hal/dx12`, `hal/gles` and `web` still
+  hand back a backend whose every call raises `Internal` with its reason, so
+  code written for them compiles and fails where the driver would have
+  answered.
+- **SPIR-V is what the device takes.** `ShaderModuleDescriptor::spirv(words~)`
+  compiles; a WGSL module is created with an error a caller can read through
+  `getCompilationInfo`, and a pipeline built on one refuses.
 - **Validation happens at the queue for commands.** A draw that names no
   pipeline is legal to record and refused at `submit`; keep the whole batch in
   mind.
