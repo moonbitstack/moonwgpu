@@ -1,0 +1,5 @@
+// The shader modules the examples and the backend tests share, as SPIR-V.
+//
+// They are compiled by `scripts/build_shaders.py` from the sources in
+// `scripts/shaders`: one module for each of the four examples, and the words are
+// what a `ShaderModuleDescriptor::spirv` takes.
