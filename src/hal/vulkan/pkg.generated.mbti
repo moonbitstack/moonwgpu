@@ -3,14 +3,101 @@ package "moonbitstack/moonwgpu/hal/vulkan"
 
 import {
   "moonbitstack/moonwgpu/hal",
+  "moonbitstack/moonwgpu/types",
 }
 
 // Values
-pub fn open() -> @hal.Unbound
+pub fn open() -> Backend
 
 // Errors
 
 // Types and methods
+pub struct Backend {
+  mut instance : Int64
+  mut device : Int64
+  device_name : String
+  driver_version : Int64
+  api_version : Int64
+  dynamic_rendering : Bool
+  samplers_anisotropic : Bool
+  reason : String
+  buffers : Map[UInt64, BufferRecord]
+  textures : Map[UInt64, TextureRecord]
+  views : Map[UInt64, ViewRecord]
+  samplers : Map[UInt64, Int64]
+  shaders : Map[UInt64, ShaderRecord]
+  set_layouts : Map[UInt64, SetLayoutRecord]
+  sets : Map[UInt64, SetRecord]
+  pipeline_layouts : Map[UInt64, PipelineLayoutRecord]
+  pipelines : Map[UInt64, PipelineRecord]
+  queries : Map[UInt64, QueryRecord]
+  submissions : Array[Int32]
+  mut next_id : UInt64
+}
+pub fn Backend::api_version(Self) -> Int64
+pub fn Backend::available(Self) -> Bool
+pub fn Backend::buffer_bytes(Self, @types.BufferId) -> Array[Byte] raise @hal.HalError
+pub fn Backend::close(Self) -> Unit
+pub fn Backend::device_name(Self) -> String
+pub fn Backend::driver_version(Self) -> Int64
+pub fn Backend::reason(Self) -> String
+pub fn Backend::submissions(Self) -> Int32
+pub fn Backend::texture_bytes(Self, @types.TextureId, mip_level? : Int32) -> Array[Byte] raise @hal.HalError
+pub impl @hal.Hal for Backend
+
+pub struct BufferRecord {
+  handle : Int64
+  descriptor : @types.BufferDescriptor
+  mut destroyed : Bool
+}
+
+pub struct PipelineLayoutRecord {
+  handle : Int64
+  descriptor : @types.PipelineLayoutDescriptor
+}
+
+pub struct PipelineRecord {
+  handle : Int64
+  label : String
+  compute : Bool
+}
+
+pub struct QueryRecord {
+  handle : Int64
+  descriptor : @types.QuerySetDescriptor
+}
+
+pub struct SetLayoutRecord {
+  handle : Int64
+  descriptor : @types.BindGroupLayoutDescriptor
+}
+
+pub struct SetRecord {
+  handle : Int64
+  layout : UInt64
+  descriptor : @types.BindGroupDescriptor
+}
+
+pub struct ShaderRecord {
+  handle : Int64
+  descriptor : @types.ShaderModuleDescriptor
+  messages : Array[@types.CompilationMessage]
+}
+
+pub struct TextureRecord {
+  handle : Int64
+  descriptor : @types.TextureDescriptor
+  format : Int64
+  layouts : Array[Int32]
+  mut destroyed : Bool
+}
+
+pub struct ViewRecord {
+  handle : Int64
+  texture : UInt64
+  format : Int64
+  descriptor : @types.TextureViewDescriptor
+}
 
 // Type aliases
 

@@ -1,12 +1,23 @@
 // The Vulkan backend.
 //
-// Vulkan is the API this library expects to run on first: it is available on
-// Linux, Windows and Android, and Mesa's lavapipe gives the CI a software
-// implementation. What it needs before it can work is a stub of C functions
-// around the loader (`vkCreateDevice`, the command pool, the swap chain), the
-// SPIR-V that `moonnaga` produces, and a `VkInstance` per `Instance`.
+// Vulkan is the first real back end: it is available on Linux and Windows,
+// and Mesa's lavapipe gives the CI a software implementation. The loader is
+// opened at run time and nothing links against libvulkan at build time, which
+// is why `stub.c` names every entry point it calls.
 //
 // https://registry.khronos.org/vulkan/specs/latest/html/vkspec.html
 import {
   "moonbitstack/moonwgpu/hal",
+  "moonbitstack/moonwgpu/types",
+  "moonbitlang/core/encoding/utf8",
 }
+
+// A package that carries C of its own is built into a library: with the
+// default kind the toolchain tries to link a program, and the stub has no
+// entry point to give it.
+pkgtype(kind: "foreign_library")
+
+options(
+  "native-stub": [ "stub.c" ],
+  link: { "native": { "cc-flags": "-O2" } },
+)
